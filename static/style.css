@@ -10,7 +10,7 @@ body {
 
 .controller {
   display: grid;
-  grid-template-columns: 150px 150px 150px; /* 3 columns */
+  grid-template-columns: 150px 150px 150px;
   grid-template-rows: 150px 150px 150px 150px;
   grid-gap: 20px;
   justify-items: center;
@@ -19,8 +19,7 @@ body {
 
 .arrow,
 .circle,
-.triangle,
-.cylinder {
+.toggle-btn {
   width: 150px;
   height: 150px;
   font-size: 3rem;
@@ -36,17 +35,15 @@ body {
 
 .arrow:hover,
 .circle:hover,
-.triangle:hover,
-.cylinder:hover {
-  background-color: #e0e0e0; /* Change background color on hover */
+.toggle-btn:hover {
+  background-color: #e0e0e0;
 }
 
 .arrow:active,
 .circle:active,
-.triangle:active,
-.cylinder:active {
-  background-color: #c0c0c0; /* Change background color on click */
-  transform: scale(0.95); /* Slightly shrink the button on click */
+.toggle-btn:active {
+  background-color: #c0c0c0;
+  transform: scale(0.95);
 }
 
 .circle {
@@ -56,19 +53,9 @@ body {
   grid-row: 2;
 }
 
-.triangle {
-  transform: rotate(0deg);
-  color: green;
-  grid-column: 1;
-  grid-row: 4;
-}
-
-.cylinder {
-  background-color: white;
-  transform: rotate(0deg);
+.toggle-btn {
   color: blue;
-  grid-column: 3;
-  grid-row: 4;
+  grid-column: 2;
 }
 
 #left {

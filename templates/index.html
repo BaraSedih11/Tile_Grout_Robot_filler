@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Robot Control</title>
-    <link rel="stylesheet" href="/static/style.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   </head>
   <body>
     <div class="controller">
@@ -13,9 +13,9 @@
       <button id="stop" class="circle">&#9679;</button>
       <button id="right" class="arrow">&#8594;</button><br />
       <button id="back" class="arrow">&#8595;</button>
-      <button id="play" class="triangle">&#9658;</button><br />
-      <button id="cylinder" class="cylinder">&#9679;</button>
+      <button id="applyGrout" class="toggle-btn">Apply Grout</button><br />
+      <button id="emptyGrout" class="toggle-btn">Empty Grout</button>
     </div>
-    <script src="/static/script.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
   </body>
 </html>

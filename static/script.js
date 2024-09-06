@@ -1,3 +1,4 @@
+// Add event listeners for movement buttons
 document.getElementById("front").addEventListener("click", function () {
   sendCommand("front");
 });
@@ -18,12 +19,18 @@ document.getElementById("stop").addEventListener("click", function () {
   sendCommand("stop");
 });
 
-document.getElementById("play").addEventListener("click", function () {
+// Toggle functionality for Apply and Empty Grout buttons
+document.getElementById("applyGrout").addEventListener("click", function () {
   sendCommand("play");
 });
 
+document.getElementById("emptyGrout").addEventListener("click", function () {
+  sendCommand("empty");
+});
+
+// Function to send commands to the Flask server
 function sendCommand(command) {
-  fetch("/command", {
+  fetch("http://localhost:5000/command", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
