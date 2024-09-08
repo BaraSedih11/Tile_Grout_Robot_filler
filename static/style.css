@@ -77,3 +77,15 @@ body {
   grid-column: 2;
   grid-row: 3;
 }
+
+.camera-frame {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.camera-frame h3 {
+  margin-bottom: 10px;
+}
+
