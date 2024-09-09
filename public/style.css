@@ -1,0 +1,225 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  box-sizing: border-box;
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f2f6fc;
+  padding-top: 50px;
+}
+
+.controller {
+  margin-top: 15%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  padding: 20px;
+}
+
+.manual-mode, .automatic-mode {
+  margin: 10px 0;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+  background-color: #fff;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+} 
+
+.manual-mode {
+  background-color: #f9f9f9;
+  display: grid;
+  grid-template-columns: 120px 120px 120px;
+  grid-template-rows: 120px 120px 120px 120px; /* Added fourth row */
+  grid-gap: 20px;
+  justify-items: center;
+  align-items: center;
+}
+
+
+
+.toggle-btn {
+  color: blue;
+  height: 60px; /* Reduce height to fit well in the grid */
+}
+
+.automatic-mode {
+  background-color: #eef5ff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px;
+  border-radius: 15px;
+}
+
+h2 {
+  margin-bottom: 20px;
+  font-size: 1.6rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.arrow, .circle, .toggle-btn, .auto-btn {
+  width: 120px;
+  height: 120px;
+  font-size: 2.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #333;
+  background-color: white;
+  cursor: pointer;
+  border-radius: 10px;
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+}
+
+.arrow:hover, .circle:hover, .toggle-btn:hover, .auto-btn:hover {
+  background-color: #e0e0e0;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.arrow:active, .circle:active, .toggle-btn:active, .auto-btn:active {
+  background-color: #c0c0c0;
+  transform: scale(0.95);
+}
+
+.circle {
+  border-radius: 50%;
+  color: red;
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.toggle-btn {
+  color: blue;
+  /* grid-column: 2 / 4; */
+  grid-row: 4;
+}
+
+.auto-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  font-size: 1.2rem;
+  width: 150px;
+  height: 50px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.4);
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.auto-btn:hover {
+  background-color: #0056b3;
+  box-shadow: 0 6px 14px rgba(0, 123, 255, 0.6);
+}
+
+#left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+#front {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+#right {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+#back {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+/* Input styling for automatic mode */
+.input-container {
+  margin: 15px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  width: 100%;
+}
+
+label {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.3);
+}
+
+
+.grout {
+  display: flex;
+  align-items: center;
+}
+
+.arrow,
+.circle,
+.toggle-btn {
+  width: 120px;
+  height: 120px;
+  font-size: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid black;
+  background-color: white;
+  cursor: pointer;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+#left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+#front {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+#right {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+#back {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+#applyGrout {
+  grid-column: 1; /* First column of the fourth row */
+  grid-row: 4;    /* Fourth row */
+}
+
+#emptyGrout {
+  grid-column: 3; /* Third column of the fourth row */
+  grid-row: 4;    /* Fourth row */
+}
