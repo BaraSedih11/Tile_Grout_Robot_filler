@@ -28,9 +28,9 @@ def run_automatic_mode(width, rows, columns, gaps):
             time.sleep(1)  # Simulate time taken to move
         movement.move_to_next_row()
 
-def handle_manual_command(command):
-    # GPIO.setmode(GPIO.BCM)
-    # GPIO.setwarnings(False)
+def handle_manual_command(command, value=None):
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(False)
 
     # Initialize movement class (which communicates with Arduino)
     movement = Movement()
@@ -39,19 +39,14 @@ def handle_manual_command(command):
     control = Control(None, movement)  # No sensors are needed for manual mode
 
     try:
-        if "MOVE_FORWARD" in command:
-            print(command)
-            distance = int(command.split()[1])
-            control.forward(distance)
-        elif "MOVE_BACKWARD" in command:
-            distance = int(command.split()[1])
-            control.backward(distance)
-        elif "ROTATE_LEFT" in command:
-            angle = int(command.split()[1])
-            control.turn_left(angle)
-        elif "ROTATE_RIGHT" in command:
-            angle = int(command.split()[1])
-            control.turn_right(angle)
+        if command == "MOVE_FORWARD":
+            control.forward(value)
+        elif command == "MOVE_BACKWARD":
+            control.backward(value)
+        elif command == "ROTATE_LEFT":
+            control.turn_left(value)
+        elif command == "ROTATE_RIGHT":
+            control.turn_right(value)
         elif command == "STOP":
             control.stop()
         else:
@@ -65,18 +60,23 @@ def handle_manual_command(command):
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         command = sys.argv[1]
-        print(sys.argv)
 
-        # If the command is for automatic mode, handle it
-        if command == "AUTOMATIC" and len(sys.argv) > 2:
+        # Check if it's a manual command with an optional distance/angle
+        if command in ["MOVE_FORWARD", "MOVE_BACKWARD", "ROTATE_LEFT", "ROTATE_RIGHT"]:
+            # Ensure a distance or angle is provided for these commands
+            if len(sys.argv) > 2:
+                value = int(sys.argv[2])
+                handle_manual_command(command, value)
+            else:
+                print(f"Error: {command} requires a value (distance or angle).")
+        elif command == "STOP":
+            handle_manual_command(command)
+        elif command == "AUTOMATIC" and len(sys.argv) > 2:
             params = json.loads(sys.argv[2])
             width = params.get("width", 40)  # Default to 40 if not provided
             rows = params.get("rows", 2)  # Default to 2 if not provided
             columns = params.get("columns", 3)  # Default to 3 if not provided
             gaps = params.get("gaps", 2)  # Default to 2 if not provided
             run_automatic_mode(width, rows, columns, gaps)
-        # Handle manual mode commands
         else:
-            handle_manual_command(command)
-    else:
-        print("No command provided")
+            print("Unknown command or insufficient arguments.")
