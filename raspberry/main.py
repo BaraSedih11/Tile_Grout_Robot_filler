@@ -29,8 +29,8 @@ def run_automatic_mode(width, rows, columns, gaps):
         movement.move_to_next_row()
 
 def handle_manual_command(command):
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(False)
+    # GPIO.setmode(GPIO.BCM)
+    # GPIO.setwarnings(False)
 
     # Initialize movement class (which communicates with Arduino)
     movement = Movement()
@@ -40,6 +40,7 @@ def handle_manual_command(command):
 
     try:
         if "MOVE_FORWARD" in command:
+            print(command)
             distance = int(command.split()[1])
             control.forward(distance)
         elif "MOVE_BACKWARD" in command:
