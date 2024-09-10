@@ -21,6 +21,7 @@ class Movement:
         #     print(f"Arduino response: {response}")        
 
     def move_forward(self, distance_cm):
+        print(distance_cm)
         self.send_command(f'MOVE_FORWARD {distance_cm}')
 
     def move_backward(self, distance_cm):
