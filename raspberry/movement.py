@@ -18,9 +18,7 @@ class Movement:
         
         self.arduino.flush()
         if response == "DONE":  # Only print non-empty responses
-            print(f"Arduino response: {response}")
-          #      break
-        
+            print(f"Arduino response: {response}")        
 
     def move_forward(self, distance_cm):
         self.send_command(f'MOVE_FORWARD {distance_cm}')

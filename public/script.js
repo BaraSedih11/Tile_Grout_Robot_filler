@@ -8,15 +8,6 @@ function sendCommand(command, params = {}) {
     body: JSON.stringify({ command: command, params: params }), // Pass both command and params
   })
     .then((response) => response.json())
-    .then((data) => {
-      document.getElementById("responseOutput").innerText = data.response
-        ? data.response
-        : "No response from Python script";
-    })
-    .catch((error) => {
-      document.getElementById("responseOutput").innerText =
-        "Error: " + error.message;
-    });
 }
 
 // Event listeners for the buttons
@@ -48,12 +39,26 @@ document.getElementById("emptyGrout").addEventListener("click", function () {
   sendCommand("EMPTY");
 });
 
-document.getElementById("automatic").addEventListener("click", function () {
-  const width = document.getElementById("width");
-  const rows = document.getElementById("rows");
-  const columns = document.getElementById("columns");
-  const gaps = document.getElementById("gaps");
-  executeCommands(width, rows, columns, gaps);
+document.getElementById('automatic').addEventListener('click', () => {
+  const width = document.getElementById('width').value;
+  const rows = document.getElementById('rows').value;
+  const columns = document.getElementById('columns').value;
+  const gaps = document.getElementById('gaps').value;
+
+  fetch('/run-automatic-mode', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ width, rows, columns, gaps })
+  })
+  .then(response => response.text())
+  .then(data => {
+      console.log(data);
+  })
+  .catch(error => {
+      console.error('Error:', error);
+  });
 });
 
 async function executeCommands(width, rows, columns, gaps) {
