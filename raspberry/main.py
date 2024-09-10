@@ -56,7 +56,7 @@ def handle_manual_command(command, value=None):
         print(f"Error executing command: {e}")
     finally:
         control.cleanup()
-        GPIO.cleanup()
+        # GPIO.cleanup()
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
