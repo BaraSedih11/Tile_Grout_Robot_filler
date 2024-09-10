@@ -8,17 +8,15 @@ class Movement:
 
     def send_command(self, command):
         print(f"Sending command: {command}")
+        self.arduino.flushInput()  # Flush input buffer
         self.arduino.write(f"{command}\n".encode('utf-8'))
         self.arduino.flush()
-
+        time.sleep(0.1)  # Add a small delay
+        print("Command Sent")
         # Wait for the Arduino to send the "DONE" response
-        response = ""
-        # while True:
-        response = self.arduino.readline().decode('utf-8')
-        
-        self.arduino.flush()
-        if response == "DONE":  # Only print non-empty responses
-            print(f"Arduino response: {response}")        
+        response = self.arduino.readline().decode('utf-8').strip()
+        if response:
+            print(f"Arduino response: {response}")
 
     def move_forward(self, distance_cm):
         self.send_command(f'MOVE_FORWARD {distance_cm}')
