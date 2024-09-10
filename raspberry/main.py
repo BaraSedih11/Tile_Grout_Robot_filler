@@ -1,6 +1,4 @@
 import sys
-import json
-from sensors import Sensors
 from movement import Movement
 from control import Control
 import RPi.GPIO as GPIO
@@ -17,14 +15,11 @@ def run_automatic_mode(width, rows, columns, gaps):
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
 
-    # Initialize sensors (ultrasonic sensor pins)
-    sensors = Sensors(trig_pin=24, echo_pin=23)  # Adjust GPIO pins for TRIG and ECHO
-
     # Initialize movement class (which communicates with Arduino)
     movement = Movement()
 
     # Initialize control class
-    control = Control(sensors, movement)
+    control = Control(None, movement)  # No sensors are needed
 
     # Example of sending a command to the movement class in automatic mode
     for row in range(NUM_ROWS):
