@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
 
 app.post('/run-automatic-mode', (req, res) => {
     const { width, rows, columns, gaps } = req.body;
-    const command = `python3 main.py ${width} ${rows} ${columns} ${gaps}`;
+    const command = `python3 raspberry/main.py ${width} ${rows} ${columns} ${gaps}`;
     
     exec(command, (error, stdout, stderr) => {
         if (error) {
