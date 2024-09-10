@@ -1,5 +1,5 @@
-import time
-import RPi.GPIO as GPIO
+# import time
+# import RPi.GPIO as GPIO
 
 class Control:
     def __init__(self, sensors, movement):
@@ -29,5 +29,5 @@ class Control:
 
     def cleanup(self):
         self.movement.stop()
-        GPIO.cleanup()
+        # GPIO.cleanup()
 
