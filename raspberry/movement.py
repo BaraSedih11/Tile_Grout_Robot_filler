@@ -2,7 +2,7 @@ import serial
 import time
 
 class Movement:
-    def __init__(self, serial_port='/dev/ttyACM0', baud_rate=9600):
+    def __init__(self, serial_port='/dev/ttyACM0', baud_rate=115200):
         self.arduino = serial.Serial(serial_port, baud_rate, timeout=1)
         self.arduino.flush()
 
