@@ -29,15 +29,15 @@ def run_automatic_mode(width, rows, columns, gaps):
         movement.move_to_next_row()
 
 def handle_manual_command(command, value=None):
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(False)
+    # GPIO.setmode(GPIO.BCM)
+    # GPIO.setwarnings(False)
 
     # Initialize movement class (which communicates with Arduino)
     movement = Movement()
 
     # Initialize control class
     control = Control(None, movement)  # No sensors are needed for manual mode
-
+    print(command, value)
     try:
         if command == "MOVE_FORWARD":
             control.forward(value)
