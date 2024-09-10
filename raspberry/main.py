@@ -65,6 +65,7 @@ def handle_manual_command(command):
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         command = sys.argv[1]
+        print(sys.argv)
 
         # If the command is for automatic mode, handle it
         if command == "AUTOMATIC" and len(sys.argv) > 2:
