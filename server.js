@@ -19,7 +19,7 @@ app.post("/command", (req, res) => {
 
   // Run the Python script and pass the command and params
   const pythonProcess = spawn("python3", [
-    "path/to/your_script.py",
+    "raspberry/main.py",
     command,
     JSON.stringify(params),
   ]);
