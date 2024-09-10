@@ -47,6 +47,7 @@ def run_automatic_mode(width, rows, columns, gaps):
         GPIO.cleanup()
 
 if __name__ == "__main__":
+    print("Reached python")
     if len(sys.argv) > 1:
         command = sys.argv[1]
         if command == "AUTOMATIC" and len(sys.argv) > 2:
