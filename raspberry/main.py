@@ -52,8 +52,8 @@ def handle_manual_command(command, value=None):
             print(f"Unknown command: {command}")
     except Exception as e:
         print(f"Error executing command: {e}")
-    finally:
-        control.cleanup()
+    # finally:
+        # control.cleanup()
         # GPIO.cleanup()
 
 if __name__ == "__main__":
