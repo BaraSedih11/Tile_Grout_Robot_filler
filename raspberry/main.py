@@ -1,7 +1,7 @@
 import sys
 from movement import Movement
 from control import Control
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 import time
 
 def run_automatic_mode(width, rows, columns, gaps):
@@ -12,8 +12,8 @@ def run_automatic_mode(width, rows, columns, gaps):
     NUM_ROWS = rows  # Use the passed number of rows
     NUM_COLS = columns  # Use the passed number of columns
 
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(False)
+    # GPIO.setmode(GPIO.BCM)
+    # GPIO.setwarnings(False)
 
     # Initialize movement class (which communicates with Arduino)
     movement = Movement()

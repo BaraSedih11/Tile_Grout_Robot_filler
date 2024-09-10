@@ -1,58 +1,74 @@
+const SerialPort = require("serialport").SerialPort;
+const ReadlineParser = require("@serialport/parser-readline").ReadlineParser;
 const express = require("express");
+const cors = require("cors");
 const path = require("path");
-const bodyParser = require("body-parser");
-const { exec } = require("child_process");
 
+// Create an instance of Express
 const app = express();
-const port = 5000;
 
-// Middleware to serve static files from the 'public' directory
+// Use CORS middleware to allow cross-origin requests
+app.use(cors());
+
+// To parse JSON body in POST requests
+app.use(express.json());
+
+// Serve static files (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, "public")));
-app.use(bodyParser.json());
 
+// Adjust the serial port to match your Arduino
+const serialPortPath = "COM3"; // Ensure this is the correct port for your Arduino
+const port = new SerialPort({
+  path: serialPortPath,
+  baudRate: 9600,
+  autoOpen: false,
+});
+const parser = port.pipe(new ReadlineParser({ delimiter: "\n" }));
+
+// Open the serial port connection
+port.open((err) => {
+  if (err) {
+    return console.log("Error opening port: ", err.message);
+  }
+  console.log(`Serial port ${serialPortPath} opened`);
+
+  // Add a small delay after opening the port to ensure the Arduino is ready
+  setTimeout(() => {
+    console.log("Arduino should now be ready to receive commands");
+  }, 2000); // 2-second delay
+});
+
+// Route to serve the index.html file (your front-end)
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Manual command route
-app.post("/manual-command", (req, res) => {
-  const { command } = req.body; // Get the command from the request body
+// Route to send commands to Arduino
+app.post("/command", (req, res) => {
+  const { command } = req.body;
 
-  // Run the Python script and pass the command as an argument
-  const pythonCommand = `python3 raspberry/main.py ${command}`;
+  if (!command) {
+    return res.status(400).json({ error: "No command received" });
+  }
 
-  exec(pythonCommand, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error: ${error.message}`);
-      return res.status(500).send("Server error");
-    }
-    if (stderr) {
-      console.error(`Stderr: ${stderr}`);
-      return res.status(500).send("Server error");
-    }
-    console.log(`Stdout: ${stdout}`);
-    res.send(`Command ${command} executed`);
+  // Write the command to the Arduino after a short delay (to avoid command flooding)
+  setTimeout(() => {
+    port.write(`${command}\n`, (err) => {
+      if (err) {
+        return res.status(500).json({ error: "Failed to write to Arduino" });
+      }
+      console.log(`Command sent to Arduino: ${command}`);
+    });
+  }, 2000); 
+
+  // Listen for the Arduino's response
+  parser.once("data", (response) => {
+    res.json({ response: response.trim() });
   });
 });
 
-app.post("/automatic-mode", (req, res) => {
-  const { width, rows, columns, gaps } = req.body;
-  const command = `python3 raspberry/main.py ${width} ${rows} ${columns} ${gaps}`;
-
-  exec(command, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error: ${error.message}`);
-      return res.status(500).send("Server error");
-    }
-    if (stderr) {
-      console.error(`Stderr: ${stderr}`);
-      return res.status(500).send("Server error");
-    }
-    console.log(`Stdout: ${stdout}`);
-    res.send("Automatic mode executed");
-  });
-});
-
-app.listen(port, () => {
-  console.log(`Server running on http://127.0.0.1:${port}`);
+// Start the server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
