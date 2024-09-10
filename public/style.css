@@ -11,7 +11,7 @@ body {
 }
 
 .controller {
-  margin-top: 15%;
+  margin-top: 20%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -34,18 +34,25 @@ body {
 .manual-mode {
   background-color: #f9f9f9;
   display: grid;
-  grid-template-columns: 120px 120px 120px;
+  grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 120px 120px 120px 120px; /* Added fourth row */
   grid-gap: 20px;
   justify-items: center;
   align-items: center;
 }
 
-
+.grout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-column: 1 / span 3; /* Make the grout section span all 3 columns */
+  grid-row: 4; /* Place the grout section in the 4th row */
+}
 
 .toggle-btn {
   color: blue;
-  height: 60px; /* Reduce height to fit well in the grid */
+  height: 60px; /* Adjust height */
+  margin: 0 10px; /* Add margin between the buttons */
 }
 
 .automatic-mode {
@@ -53,13 +60,16 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px;
+  padding: 40px;
   border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 123, 255, 0.2); /* Subtle shadow for depth */
+  max-width: 400px; /* Limits the width */
+  width: 100%; /* Makes it responsive */
 }
 
 h2 {
-  margin-bottom: 20px;
-  font-size: 1.6rem;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
   color: #333;
   font-weight: 600;
 }
@@ -107,38 +117,22 @@ h2 {
   color: white;
   border: none;
   font-size: 1.2rem;
-  width: 150px;
+  width: 180px;
   height: 50px;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.4);
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3); /* Adjusted shadow */
   transition: background-color 0.3s ease, transform 0.1s ease;
 }
-
 .auto-btn:hover {
   background-color: #0056b3;
-  box-shadow: 0 6px 14px rgba(0, 123, 255, 0.6);
+  box-shadow: 0 6px 14px rgba(0, 123, 255, 0.5); /* Brighter hover effect */
+  transform: translateY(-2px); /* Lift the button on hover */
 }
 
-#left {
-  grid-column: 1;
-  grid-row: 2;
-}
-
-#front {
-  grid-column: 2;
-  grid-row: 1;
-}
-
-#right {
-  grid-column: 3;
-  grid-row: 2;
-}
-
-#back {
-  grid-column: 2;
-  grid-row: 3;
+.auto-btn:active {
+  transform: scale(0.98); /* Slight scale effect on click */
 }
 
 /* Input styling for automatic mode */
@@ -146,12 +140,12 @@ h2 {
   margin: 15px 0;
   display: flex;
   flex-direction: column;
-  align-items: start;
-  width: 100%;
+  align-items: flex-start;
+  width: 100%; /* Ensure full width on small screens */
 }
 
 label {
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: #555;
   margin-bottom: 5px;
 }
@@ -160,23 +154,18 @@ input {
   width: 100%;
   padding: 12px;
   font-size: 1rem;
-  border-radius: 5px;
+  border-radius: 8px; /* Softer corners */
   border: 1px solid #ccc;
-  box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow inside */
   transition: border-color 0.3s ease;
 }
 
 input:focus {
   border-color: #007bff;
   outline: none;
-  box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.3);
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3); /* Outer shadow on focus */
 }
 
-
-.grout {
-  display: flex;
-  align-items: center;
-}
 
 .arrow,
 .circle,
@@ -222,4 +211,17 @@ input:focus {
 #emptyGrout {
   grid-column: 3; /* Third column of the fourth row */
   grid-row: 4;    /* Fourth row */
+}
+
+@media (max-width: 600px) {
+  .controller{
+    margin-top: 80%;
+  }
+  .automatic-mode {
+    padding: 30px;
+  }
+
+  .auto-btn {
+    width: 100%; /* Make the button responsive */
+  }
 }

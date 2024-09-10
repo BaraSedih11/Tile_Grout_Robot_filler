@@ -17,7 +17,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 // Adjust the serial port to match your Arduino
-const serialPortPath = "COM3"; // Ensure this is the correct port for your Arduino
+const serialPortPath = "COM4"; // Ensure this is the correct port for your Arduino
 const port = new SerialPort({
   path: serialPortPath,
   baudRate: 9600,

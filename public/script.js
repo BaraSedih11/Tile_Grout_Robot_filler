@@ -49,41 +49,57 @@ document.getElementById("emptyGrout").addEventListener("click", function () {
 });
 
 document.getElementById("automatic").addEventListener("click", function () {
-  sendCommand("MOVE_FORWARD 80.5");
-  sendCommand("MOVE_BACKWARD 15");
-  sendCommand("ROTATE_LEFT 194");
-  sendCommand("MOVE_FRONT 16");
-  sendCommand("ROTATE_LEFT 97");
-  sendCommand("MOVE_BACKWARD 10");
-
-  sleep(1000);
-
-  sendCommand("MOVE_FORWARD 121");
-  sendCommand("MOVE_BACKWARD 10");
-  sendCommand("ROTATE_LEFT 194");
-  sendCommand("MOVE_FRONT 16");
-  sendCommand("ROTATE_LEFT 97");
-  sendCommand("MOVE_BACKWARD 10");
-
-  sleep(1000);
-
-  sendCommand("MOVE_FORWARD 80.5");
-  sendCommand("MOVE_BACKWARD 15");
-  sendCommand("ROTATE_LEFT 194");
-  sendCommand("MOVE_FRONT 16");
-  sendCommand("ROTATE_LEFT 97");
-  sendCommand("MOVE_BACKWARD 10");
-
-  sleep(1000);
-
-  sendCommand("MOVE_FORWARD 121");
-  sendCommand("MOVE_BACKWARD 10");
-  sendCommand("ROTATE_LEFT 194");
-  sendCommand("MOVE_FRONT 16");
-  sendCommand("ROTATE_LEFT 97");
-  sendCommand("MOVE_BACKWARD 10");
+  const width = document.getElementById("width");
+  const rows = document.getElementById("rows");
+  const columns = document.getElementById("columns");
+  const gaps = document.getElementById("gaps");
+  executeCommands(width, rows, columns, gaps);
 });
 
+async function executeCommands(width, rows, columns, gaps) {
+  console.log("width");
+  console.log("rows");
+  console.log("columns");
+  console.log("gaps");
+
+  const vertical = width * columns + gaps;
+  const horizontal = width * rows + gaps;
+
+  await sendCommand(`MOVE_FORWARD ${vertical}`);
+  await sendCommand("MOVE_BACKWARD 15");
+  await sendCommand("ROTATE_LEFT 194");
+  await sendCommand("MOVE_FRONT 16");
+  await sendCommand("ROTATE_LEFT 97");
+  await sendCommand("MOVE_BACKWARD 10");
+
+  await sleep(5000); // Wait for 1 second before the next set of commands
+
+  await sendCommand(`MOVE_FORWARD ${horizontal}`);
+  await sendCommand("MOVE_BACKWARD 10");
+  await sendCommand("ROTATE_LEFT 194");
+  await sendCommand("MOVE_FRONT 16");
+  await sendCommand("ROTATE_LEFT 97");
+  await sendCommand("MOVE_BACKWARD 10");
+
+  await sleep(5000); // Wait for 1 second
+
+  await sendCommand(`MOVE_FORWARD ${vertical}`);
+  await sendCommand("MOVE_BACKWARD 15");
+  await sendCommand("ROTATE_LEFT 194");
+  await sendCommand("MOVE_FRONT 16");
+  await sendCommand("ROTATE_LEFT 97");
+  await sendCommand("MOVE_BACKWARD 10");
+
+  await sleep(5000); // Wait for 1 second
+
+  await sendCommand(`MOVE_FORWARD ${horizontal}`);
+  await sendCommand("MOVE_BACKWARD 10");
+  await sendCommand("ROTATE_LEFT 194");
+  await sendCommand("MOVE_FRONT 16");
+  await sendCommand("ROTATE_LEFT 97");
+  await sendCommand("MOVE_BACKWARD 10");
+}
+
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
