@@ -11,17 +11,16 @@ class Movement:
         self.arduino.write(f"{command}\n".encode('utf-8'))
         self.arduino.flush()
 
-        # # Wait for the Arduino to send the "DONE" response
-        # response = ""
-        # # while True:
-        # response = self.arduino.readline().decode('utf-8')
+        # Wait for the Arduino to send the "DONE" response
+        response = ""
+        # while True:
+        response = self.arduino.readline().decode('utf-8')
         
-        # self.arduino.flush()
-        # if response == "DONE":  # Only print non-empty responses
-        #     print(f"Arduino response: {response}")        
+        self.arduino.flush()
+        if response == "DONE":  # Only print non-empty responses
+            print(f"Arduino response: {response}")        
 
     def move_forward(self, distance_cm):
-        print(distance_cm)
         self.send_command(f'MOVE_FORWARD {distance_cm}')
 
     def move_backward(self, distance_cm):

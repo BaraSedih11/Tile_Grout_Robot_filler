@@ -37,8 +37,6 @@ def handle_manual_command(command, value=None):
 
     # Initialize control class
     control = Control(None, movement)  # No sensors are needed for manual mode
-    print("Hello workdssssssssss")
-    print(command, value)
     try:
         if command == "MOVE_FORWARD":
             control.forward(value)
