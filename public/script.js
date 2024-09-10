@@ -1,17 +1,17 @@
-// Helper function to send commands to the server
-function sendCommand(command) {
+function sendCommand(command, params = {}) {
+  // Send a POST request to the server with the command and any additional parameters
   fetch("/command", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ command: command }),
+    body: JSON.stringify({ command: command, params: params }), // Pass both command and params
   })
     .then((response) => response.json())
     .then((data) => {
       document.getElementById("responseOutput").innerText = data.response
         ? data.response
-        : "No response from Arduino";
+        : "No response from Python script";
     })
     .catch((error) => {
       document.getElementById("responseOutput").innerText =
@@ -62,44 +62,44 @@ async function executeCommands(width, rows, columns, gaps) {
   console.log("columns");
   console.log("gaps");
 
-  const vertical = width * columns + gaps;
-  const horizontal = width * rows + gaps;
+  sendCommand("AUTOMATIC", { width: width, rows: rows, columns: columns, gaps: gaps });
 
-  await sendCommand(`MOVE_FORWARD ${vertical}`);
-  await sendCommand("MOVE_BACKWARD 15");
-  await sendCommand("ROTATE_LEFT 194");
-  await sendCommand("MOVE_FRONT 16");
-  await sendCommand("ROTATE_LEFT 97");
-  await sendCommand("MOVE_BACKWARD 10");
 
-  await sleep(5000); // Wait for 1 second before the next set of commands
+  // await sendCommand(`MOVE_FORWARD ${vertical}`);
+  // await sendCommand("MOVE_BACKWARD 15");
+  // await sendCommand("ROTATE_LEFT 194");
+  // await sendCommand("MOVE_FRONT 16");
+  // await sendCommand("ROTATE_LEFT 97");
+  // await sendCommand("MOVE_BACKWARD 10");
 
-  await sendCommand(`MOVE_FORWARD ${horizontal}`);
-  await sendCommand("MOVE_BACKWARD 10");
-  await sendCommand("ROTATE_LEFT 194");
-  await sendCommand("MOVE_FRONT 16");
-  await sendCommand("ROTATE_LEFT 97");
-  await sendCommand("MOVE_BACKWARD 10");
+  // await sleep(5000); // Wait for 1 second before the next set of commands
 
-  await sleep(5000); // Wait for 1 second
+  // await sendCommand(`MOVE_FORWARD ${horizontal}`);
+  // await sendCommand("MOVE_BACKWARD 10");
+  // await sendCommand("ROTATE_LEFT 194");
+  // await sendCommand("MOVE_FRONT 16");
+  // await sendCommand("ROTATE_LEFT 97");
+  // await sendCommand("MOVE_BACKWARD 10");
 
-  await sendCommand(`MOVE_FORWARD ${vertical}`);
-  await sendCommand("MOVE_BACKWARD 15");
-  await sendCommand("ROTATE_LEFT 194");
-  await sendCommand("MOVE_FRONT 16");
-  await sendCommand("ROTATE_LEFT 97");
-  await sendCommand("MOVE_BACKWARD 10");
+  // await sleep(5000); // Wait for 1 second
 
-  await sleep(5000); // Wait for 1 second
+  // await sendCommand(`MOVE_FORWARD ${vertical}`);
+  // await sendCommand("MOVE_BACKWARD 15");
+  // await sendCommand("ROTATE_LEFT 194");
+  // await sendCommand("MOVE_FRONT 16");
+  // await sendCommand("ROTATE_LEFT 97");
+  // await sendCommand("MOVE_BACKWARD 10");
 
-  await sendCommand(`MOVE_FORWARD ${horizontal}`);
-  await sendCommand("MOVE_BACKWARD 10");
-  await sendCommand("ROTATE_LEFT 194");
-  await sendCommand("MOVE_FRONT 16");
-  await sendCommand("ROTATE_LEFT 97");
-  await sendCommand("MOVE_BACKWARD 10");
+  // await sleep(5000); // Wait for 1 second
+
+  // await sendCommand(`MOVE_FORWARD ${horizontal}`);
+  // await sendCommand("MOVE_BACKWARD 10");
+  // await sendCommand("ROTATE_LEFT 194");
+  // await sendCommand("MOVE_FRONT 16");
+  // await sendCommand("ROTATE_LEFT 97");
+  // await sendCommand("MOVE_BACKWARD 10");
 }
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
