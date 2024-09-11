@@ -1,21 +1,22 @@
 // Helper function to send commands to the server
 function sendCommand(command) {
-  return fetch("/command", {
+  fetch("/command", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ command: command }),
   })
-  .then(response => response.json())
-  .then(data => {
-    document.getElementById("responseOutput").innerText = data.response ? data.response : "No response from Arduino";
-    return data.response; // Return response for further processing
-  })
-  .catch(error => {
-    document.getElementById("responseOutput").innerText = "Error: " + error.message;
-    throw error;
-  });
+    .then((response) => response.json())
+    .then((data) => {
+      document.getElementById("responseOutput").innerText = data.response
+        ? data.response
+        : "No response from Arduino";
+    })
+    .catch((error) => {
+      document.getElementById("responseOutput").innerText =
+        "Error: " + error.message;
+    });
 }
 
 // Event listeners for the buttons
@@ -48,49 +49,61 @@ document.getElementById("emptyGrout").addEventListener("click", function () {
 });
 
 document.getElementById("automatic").addEventListener("click", function () {
-  const width = parseFloat(document.getElementById("width").value);
-  const rows = parseInt(document.getElementById("rows").value, 10);
-  const columns = parseInt(document.getElementById("columns").value, 10);
-  const gaps = parseFloat(document.getElementById("gaps").value);
-
-  startAutomaticMode(width, rows, columns, gaps);
+  const width = document.getElementById("width");
+  const rows = document.getElementById("rows");
+  const columns = document.getElementById("columns");
+  const gaps = document.getElementById("gaps");
+  executeCommands(width, rows, columns, gaps);
 });
 
-async function startAutomaticMode(width, rows, columns, gaps) {
+function executeCommands(width, rows, columns, gaps) {
+  console.log(width);
+  console.log(rows);
+  console.log(columns);
+  console.log(gaps);
+
   const vertical = width * columns + gaps;
   const horizontal = width * rows + gaps;
 
-  await followGap(vertical, horizontal);
+  // sendCommand(`MOVE_FORWARD ${vertical}`);
+  sendCommand(`MOVE_FORWARD 80.5`);
+  sendCommand("MOVE_BACKWARD 15");
+  sendCommand("ROTATE_LEFT 194");
+  sendCommand("MOVE_FRONT 16");
+  sendCommand("ROTATE_LEFT 97");
+  sendCommand("MOVE_BACKWARD 15");
+
+  sleep(5000); // Wait for 1 second before the next set of commands
+
+  // sendCommand(`MOVE_FORWARD ${horizontal}`);
+  sendCommand(`MOVE_FORWARD 121`);
+  sendCommand("MOVE_BACKWARD 10");
+  sendCommand("ROTATE_LEFT 194");
+  sendCommand("MOVE_FRONT 16");
+  sendCommand("ROTATE_LEFT 97");
+  sendCommand("MOVE_BACKWARD 15");
+
+  sleep(5000); // Wait for 1 second
+
+  // sendCommand(`MOVE_FORWARD ${vertical}`);
+  sendCommand(`MOVE_FORWARD 80.5`);
+  sendCommand("MOVE_BACKWARD 15");
+  sendCommand("ROTATE_LEFT 194");
+  sendCommand("MOVE_FRONT 16");
+  sendCommand("ROTATE_LEFT 97");
+  sendCommand("MOVE_BACKWARD 15");
+
+  sleep(5000); // Wait for 1 second
+
+  // sendCommand(`MOVE_FORWARD ${horizontal}`);
+  sendCommand(`MOVE_FORWARD 121`);
+  sendCommand("MOVE_BACKWARD 10");
+  sendCommand("ROTATE_LEFT 194");
+  sendCommand("MOVE_FRONT 16");
+  sendCommand("ROTATE_LEFT 97");
+  sendCommand("MOVE_BACKWARD 15");
 }
 
-async function followGap(vertical, horizontal) {
-  // Adjust the following commands based on real-time feedback
-  let detectedGap = false;
-
-  while (!detectedGap) {
-    await sendCommand(`MOVE_FORWARD ${vertical}`);
-    detectedGap = await checkForGap();
-    if (!detectedGap) {
-      await sendCommand("ROTATE_RIGHT 10"); // Adjust angle as needed
-    }
-  }
-
-  // Continue with the remaining commands
-  await sendCommand("MOVE_BACKWARD 15");
-  await sendCommand("ROTATE_LEFT 194");
-  await sendCommand("MOVE_FRONT 16");
-  await sendCommand("ROTATE_LEFT 97");
-  await sendCommand("MOVE_BACKWARD 10");
-
-  // Repeat as necessary
-}
-
-async function checkForGap() {
-  return fetch("/check-gap")
-    .then(response => response.json())
-    .then(data => data.gapDetected)
-    .catch(error => {
-      console.error("Error checking for gap:", error);
-      return false;
-    });
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
