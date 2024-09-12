@@ -10,7 +10,7 @@ CORS(app)  # Enable CORS for all routes
 
 
 # Set up the serial connection to Arduino
-arduino = serial.Serial(port='COM3', baudrate=9600, timeout=1)
+arduino = serial.Serial(port='/dev/ttyACM0', baudrate=9600, timeout=1)
 arduino.flush()
 
 # Movement commands using serial communication with Arduino
