@@ -60,7 +60,7 @@ void loop() {
   if (Serial.available() > 0) {
     command = Serial.readStringUntil('\n');  // Read command from Raspberry Pi
     command.trim();                          // Remove any trailing or leading whitespace
-
+    Serial.println(command);
     // Parse the command and execute actions
     if (command.startsWith("MOVE_FORWARD")) {
       float distance = command.substring(13).toFloat();
@@ -77,10 +77,13 @@ void loop() {
       rotateLeft(angle);
     } else if (command == "STOP") {
       stopMotors();
-    } else if (command == "PLAY") {
-      applyGrout();  // Start applying grout
+    } else if (command == "APPLY") {
+      applyGrout();
     } else if (command == "EMPTY") {
-      emptyGrout();  // Start emptying grout
+      emptyGrout();
+    } else if (command.startsWith("MOVE_FRONT")) {
+      float distance = command.substring(11).toFloat();
+      moveForwardWithoutGrout(distance);
     }
 
     Serial.println("DONE");
@@ -120,6 +123,22 @@ void moveForward(float distance_cm) {
 
   digitalWrite(ENA, HIGH);
   isGroutMotorRunning = true;  // Flag to indicate motor is running
+}
+
+void moveForwardWithoutGrout(float distance_cm) {
+  int steps = calculateMovementSteps(distance_cm);
+  digitalWrite(DIR_PIN1, LOW);   // Motor 1 forward
+  digitalWrite(DIR_PIN2, HIGH);  // Motor 2 forward
+
+  for (int i = 0; i < steps; i++) {
+    digitalWrite(STEP_PIN1, HIGH);
+    digitalWrite(STEP_PIN2, HIGH);
+    delayMicroseconds(3000);
+
+    digitalWrite(STEP_PIN1, LOW);
+    digitalWrite(STEP_PIN2, LOW);
+    delayMicroseconds(3000);
+  }
 }
 
 // Function to move the robot backward by a specific distance (in cm)
