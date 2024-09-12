@@ -53,7 +53,7 @@ document.getElementById("automatic").addEventListener("click", function () {
       gaps: parseFloat(gaps)
   };
 
-  fetch("http://localhost:5000/automatic-mode", {
+  fetch("http://0.0.0.0:5000/automatic-mode", {
       method: "POST",
       headers: {
           "Content-Type": "application/json"
