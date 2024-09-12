@@ -38,6 +38,7 @@ def check_gap():
     gap_detected = processing.detect_gap(edges)
     return jsonify(gapDetected=gap_detected)
 
+
 @app.route('/video_feed')
 def video_feed():
     def generate():

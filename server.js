@@ -59,11 +59,43 @@ app.post("/command", (req, res) => {
       }
       console.log(`Command sent to Arduino: ${command}`);
     });
-  }, 2000); 
+  }, 2000);
 
   // Listen for the Arduino's response
   parser.once("data", (response) => {
     res.json({ response: response.trim() });
+  });
+});
+
+// Route to handle automatic mode
+app.post("/automatic-mode", (req, res) => {
+  const { width, rows, columns, gaps } = req.body;
+
+  if (!width || !rows || !columns || !gaps) {
+    return res
+      .status(400)
+      .json({ error: "Missing parameters for automatic mode" });
+  }
+
+  // Pass the data to the Raspberry Pi (assumed to run the Python script with the input values)
+  const spawn = require("child_process").spawn;
+  const pythonProcess = spawn("python3", [
+    "raspberry/main.py",
+    "AUTOMATIC",
+    JSON.stringify({ width, rows, columns, gaps }),
+  ]);
+
+  pythonProcess.stdout.on("data", (data) => {
+    console.log(`Output from Python: ${data}`);
+    res.json({
+      message: "Automatic mode started successfully",
+      output: data.toString(),
+    });
+  });
+
+  pythonProcess.stderr.on("data", (data) => {
+    console.error(`Error from Python: ${data}`);
+    res.status(500).json({ error: "Failed to start automatic mode" });
   });
 });
 

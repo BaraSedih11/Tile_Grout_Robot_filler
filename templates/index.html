@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Robot Control</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+    <div class="controller">
+        <!-- Manual Mode Buttons -->
+        <div class="manual-mode">
+            <button id="front" class="arrow">&#8593;</button><br />
+            <button id="left" class="arrow">&#8592;</button>
+            <button id="stop" class="circle">&#9679;</button>
+            <button id="right" class="arrow">&#8594;</button><br />
+            <button id="back" class="arrow">&#8595;</button><br />
+            <div class="grout">
+                <button id="applyGrout" class="toggle-btn">Apply Grout</button>
+                <button id="emptyGrout" class="toggle-btn">Empty Grout</button>
+                <!-- <img src="/video_feed" width="320" height="240" /> -->
+            </div>
+        </div>
+
+        <!-- Automatic Mode Section -->
+        <button id="automatic" class="auto-btn">Start Automatic</button>
+        <div class="input-container">
+            <label for="columns">Tile Columns:</label>
+            <input id="columns" type="number" placeholder="Enter number of columns" required />
+        </div>
+        <div class="input-container">
+            <label for="rows">Tile Rows:</label>
+            <input id="rows" type="number" placeholder="Enter number of rows" required />
+        </div>
+        <div class="input-container">
+            <label for="gaps">Tile Gaps Size (mm):</label>
+            <input id="gaps" type="number" placeholder="Enter gaps size in mm" required />
+        </div>
+        <div class="input-container">
+            <label for="width">Tile Width (cm):</label>
+            <input id="width" type="number" placeholder="Enter tile width" required />
+</div>
+
+    </div>
+
+    <!-- Link to the JavaScript file -->
+    <script src="../static/script.js"></script>
+</body>
+</html>

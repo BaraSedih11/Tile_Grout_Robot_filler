@@ -1,32 +1,38 @@
 import sys
+import time
+import json
+import requests  # Correct import for requests
+
 from movement import Movement
 from control import Control
 # import RPi.GPIO as GPIO
-import time
 
 def run_automatic_mode(width, rows, columns, gaps):
-    TILE_WIDTH = width  # Use the passed width
-    GAP_WIDTH = gaps  # Use the passed gaps
-    TOTAL_WIDTH = TILE_WIDTH + GAP_WIDTH  # Total width to move per tile
+    TILE_WIDTH = width
+    GAP_WIDTH = gaps
+    TOTAL_WIDTH = TILE_WIDTH + GAP_WIDTH
 
-    NUM_ROWS = rows  # Use the passed number of rows
-    NUM_COLS = columns  # Use the passed number of columns
+    NUM_ROWS = rows
+    NUM_COLS = columns
 
-    # GPIO.setmode(GPIO.BCM)
-    # GPIO.setwarnings(False)
-
-    # Initialize movement class (which communicates with Arduino)
     movement = Movement()
 
-    # Initialize control class
-    control = Control(None, movement)  # No sensors are needed
-
-    # Example of sending a command to the movement class in automatic mode
     for row in range(NUM_ROWS):
         for col in range(NUM_COLS):
             movement.move_forward(TOTAL_WIDTH)
-            time.sleep(1)  # Simulate time taken to move
+            gap_detected = check_gap_status()
+            if not gap_detected:
+                print("Deviation detected, stopping.")
+                movement.stop()
+                break
+            time.sleep(1)
         movement.move_to_next_row()
+
+def check_gap_status():
+    # Call the API to check for gap detection
+    response = requests.get("http://localhost:5050/check-gap")
+    result = response.json()
+    return result['gapDetected']
 
 def handle_manual_command(command, value=None):
     # GPIO.setmode(GPIO.BCM)
