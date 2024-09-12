@@ -1,47 +1,41 @@
-import os
-import sys
-import json
-import time
 import cv2
 import numpy as np
 from flask import Flask, request, jsonify, render_template, Response
 import serial  # Serial communication with Arduino
+import time
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
+
 
 # Set up the serial connection to Arduino
-# Make sure the port and baudrate match the ones used by your Arduino
 arduino = serial.Serial(port='COM3', baudrate=9600, timeout=1)
+arduino.flush()
 
 # Movement commands using serial communication with Arduino
-def send_serial_command(command):
-    """Send a command over serial to the Arduino."""
+def send_serial_command(command, value=0):
+    """Send a command over serial to the Arduino and wait for the 'DONE' response."""
     if arduino.is_open:
-        arduino.write(f"{command}\n".encode())
-        print(f"Sent command: {command}")
+        # Write the command to the serial based on whether it has a value or not
+        if command in ['APPLY', 'EMPTY', 'STOP']:
+            arduino.write(f"{command}\n".encode())
+            print(f"Sent command: {command}")
+        else:
+            arduino.write(f"{command} {value}\n".encode())
+            print(f"Sent command: {command} {value}")
+        
+        # Wait for the 'DONE' response from Arduino
+        while True:
+            if arduino.in_waiting > 0:  # Check if there's incoming data in the serial buffer
+                response = arduino.readline().decode().strip()  # Read the incoming serial data
+                print(f"Arduino response: {response}")
+                if response == "DONE":  # Exit the loop if 'DONE' is received
+                    break
+            time.sleep(0.1)  # Add a small delay to avoid excessive CPU usage in the loop
     else:
         print("Serial port not open")
-
-# Movement class to wrap serial commands
-class Movement:
-    def move_forward(self, distance_cm):
-        send_serial_command(f"MOVE_FORWARD {distance_cm}")
-
-    def move_backward(self, distance_cm):
-        send_serial_command(f"MOVE_BACKWARD {distance_cm}")
-
-    def rotate_right(self, angle_deg):
-        send_serial_command(f"ROTATE_RIGHT {angle_deg}")
-
-    def rotate_left(self, angle_deg):
-        send_serial_command(f"ROTATE_LEFT {angle_deg}")
-
-    def stop(self):
-        send_serial_command("STOP")
-
-    def move_to_next_row(self):
-        send_serial_command("MOVE_NEXT_ROW")
-
+    
 
 # Image processing and gap detection logic (camera input)
 class Processing:
@@ -63,7 +57,6 @@ class Processing:
             if abs(x2 - x1) < 10 and abs(y2 - y1) > 10:
                 return True
         return False
-
 
 def capture_frame():
     cap = cv2.VideoCapture(0)  # 0 for default camera
@@ -89,7 +82,6 @@ def check_gap():
     gap_detected = check_gap_status()
     return jsonify(gapDetected=gap_detected)
 
-
 @app.route('/video_feed')
 def video_feed():
     def generate():
@@ -102,7 +94,6 @@ def video_feed():
         cap.release()
 
     return Response(generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
 
 # Route to handle manual commands from the UI
 @app.route('/command', methods=['POST'])
@@ -122,19 +113,23 @@ def command():
         if not command:
             return jsonify({"error": "Missing 'command' in request"}), 400
 
-        movement = Movement()  # Instantiate Movement class
-
         # Execute the command received from the client
         if command == "MOVE_FORWARD":
-            movement.move_forward(value)
+            send_serial_command("MOVE_FORWARD", value)
         elif command == "MOVE_BACKWARD":
-            movement.move_backward(value)
+            send_serial_command("MOVE_BACKWARD", value)
         elif command == "ROTATE_LEFT":
-            movement.rotate_left(value)
+            send_serial_command("ROTATE_LEFT", value)
         elif command == "ROTATE_RIGHT":
-            movement.rotate_right(value)
+            send_serial_command("ROTATE_RIGHT", value)
+        elif command == "MOVE_FRONT":
+            send_serial_command("MOVE_FRONT", value)
+        elif command == "APPLY":
+            send_serial_command("APPLY")
+        elif command == "EMPTY":
+            send_serial_command("EMPTY")
         elif command == "STOP":
-            movement.stop()
+            send_serial_command("STOP")
         else:
             return jsonify({"error": "Unknown command"}), 400
 
@@ -142,12 +137,14 @@ def command():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
-
-
-# New Route for Automatic Mode
+    
+    
 @app.route('/automatic-mode', methods=['POST'])
 def automatic_mode():
     try:
+        # Log the request to verify it's received
+        print("Automatic mode request received")
+
         # Get parameters for automatic mode from request
         data = request.get_json()
         print("Received data for automatic mode:", data)
@@ -163,30 +160,45 @@ def automatic_mode():
         return jsonify({"response": "Automatic mode initiated"})
 
     except Exception as e:
+        print(f"Error in automatic mode: {e}")
         return jsonify({"error": str(e)}), 400
 
 
 # Automatic mode handler
-def run_automatic_mode(width, rows, columns, gaps):
-    TILE_WIDTH = width
-    GAP_WIDTH = gaps
-    TOTAL_WIDTH = TILE_WIDTH + GAP_WIDTH
+def run_automatic_mode(tile_width, rows, columns, gaps):
+    # Robot size and safety distance
+    robot_size = 40  # cm
+    safety_distance = 20  # cm (stay 20cm away from the wall)
+    
+    # Calculate the actual movement distances, accounting for tile gaps
+    total_tile_width = tile_width + gaps  # Tile width + gap between tiles
+    
+    # Distance the robot can safely travel (stay away from walls)
+    max_col_distance = (columns - 1) * total_tile_width  # Avoid last tile and wall
+    max_row_distance = (rows - 1) * total_tile_width  # Avoid last row and wall
+    
+    print("Starting automatic mode")
 
-    NUM_ROWS = rows
-    NUM_COLS = columns
+    # Loop over the number of columns (avoiding the outer walls)
+    for col in range(columns - 1):  # Avoid last column to allow for rotation space
+        # Move along the column (forward along tiles)
+        send_serial_command("MOVE_FORWARD", max_col_distance)
 
-    movement = Movement()
+        # At the end of the row, rotate and move back along the next row
+        if col < columns - 1:
+            send_serial_command("MOVE_BACKWARD", robot_size / 2)  # Move slightly back
+            send_serial_command("ROTATE_RIGHT", 97)  # Rotate left to face the next row
+            send_serial_command("MOVE_FORWARD", max_row_distance)  # Move forward along the row gap
+            send_serial_command("ROTATE_RIGHT", 97)  # Rotate again to face back along the row
 
-    for row in range(NUM_ROWS):
-        for col in range(NUM_COLS):
-            movement.move_forward(TOTAL_WIDTH)
-            gap_detected = check_gap_status()
-            if not gap_detected:
-                print("Deviation detected, stopping.")
-                movement.stop()
-                break
-            time.sleep(1)
-        movement.move_to_next_row()
+        # Move along the next row
+        send_serial_command("MOVE_FORWARD", max_col_distance)
+    
+        # Safety stop to avoid getting too close to the wall
+        send_serial_command("STOP")
+
+    # Complete final row (if needed)
+    print("Automatic mode completed")
 
 if __name__ == '__main__':
     # Serve the application on port 5000
