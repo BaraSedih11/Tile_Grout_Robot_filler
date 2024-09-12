@@ -186,10 +186,10 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
 
         # At the end of the row, rotate and move back along the next row
         if col < columns - 1:
-            send_serial_command("MOVE_BACKWARD", robot_size / 2 + 15)  # Move slightly back
+            send_serial_command("MOVE_BACKWARD", robot_size / 2 + 12.5)  # Move slightly back
             send_serial_command("ROTATE_RIGHT", 97)  # Rotate left to face the next row
-            send_serial_command("MOVE_BACKWARD", tile_width / 2 + 5)  # Move slightly back
-            send_serial_command("MOVE_FORWARD", max_row_distance)  # Move forward along the row gap
+            send_serial_command("MOVE_BACKWARD", tile_width / 2)  # Move slightly back
+            send_serial_command("MOVE_FORWARD", max_row_distance - 10)  # Move forward along the row gap
             send_serial_command("ROTATE_RIGHT", 97)  # Rotate again to face back along the row
 
         # Move along the next row
