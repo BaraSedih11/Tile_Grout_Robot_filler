@@ -1,41 +1,23 @@
-from flask import Flask, Response, render_template_string
+from flask import Flask, Response
+from picamera import PiCamera
+from picamera.array import PiRGBArray
+import time
 import cv2
 
 app = Flask(__name__)
+camera = PiCamera()
+camera.resolution = (640, 480)
+raw_capture = PiRGBArray(camera, size=(640, 480))
 
 def gen_frames():
-    cap = cv2.VideoCapture(0)
-    if not cap.isOpened():
-        print("Error: Could not open video device.")
-        return  # Exit if the camera cannot be accessed
-    
-    while True:
-        success, frame = cap.read()
-        if not success:
-            print("Error: Failed to capture frame.")
-            break
-        else:
-            print("Frame captured for streaming.")  # Debugging line
-            ret, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-
-@app.route('/')
-def index():
-    # Render a simple HTML page that displays the video feed
-    return render_template_string('''
-        <html>
-            <head>
-                <title>Video Stream</title>
-            </head>
-            <body>
-                <h1>Live Video Stream</h1>
-                <img src="{{ url_for('video_feed') }}" alt="Video Feed">
-            </body>
-        </html>
-    ''')
+    time.sleep(2)  # Camera warm-up time
+    for frame in camera.capture_continuous(raw_capture, format="bgr", use_video_port=True):
+        image = frame.array
+        ret, buffer = cv2.imencode('.jpg', image)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        raw_capture.truncate(0)
 
 @app.route('/video_feed')
 def video_feed():
