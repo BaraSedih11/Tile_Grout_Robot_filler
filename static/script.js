@@ -43,7 +43,7 @@ document.getElementById("automatic").addEventListener("click", function () {
   const rows = document.getElementById("rows").value;
   const columns = document.getElementById("columns").value;
   let gaps = document.getElementById("gaps").value;
-  console.log("Pressed")
+
   gaps = gaps / 10;  // Convert gaps from mm to cm
 
   const requestData = {
