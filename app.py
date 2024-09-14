@@ -166,41 +166,28 @@ def automatic_mode():
 
 # Automatic mode handler
 def run_automatic_mode(tile_width, rows, columns, gaps):
-    # Robot size and safety distance
-    robot_size = 40  # cm
-    safety_distance = 20  # cm (stay 20cm away from the wall)
+        
+    total_tile_width = tile_width + gaps # 40.25
     
-    # Calculate the actual movement distances, accounting for tile gaps
-    total_tile_width = tile_width + gaps  # Tile width + gap between tiles
+    max_col_distance = (columns - 1) * total_tile_width  # 80.5
+    max_row_distance = (rows - 1) * total_tile_width # 120.75
     
-    # Distance the robot can safely travel (stay away from walls)
-    max_col_distance = (columns - 1) * total_tile_width  # Avoid last tile and wall
-    max_row_distance = (rows - 1) * total_tile_width  # Avoid last row and wall
-    
-    print("Starting automatic mode")
+    for col in range(columns - 1):
+        send_serial_command("MOVE_FORWARD", max_col_distance) # 80.5
 
-    # Loop over the number of columns (avoiding the outer walls)
-    for col in range(columns - 1):  # Avoid last column to allow for rotation space
-        # Move along the column (forward along tiles)
-        send_serial_command("MOVE_FORWARD", max_col_distance)
-
-        # At the end of the row, rotate and move back along the next row
         if col < columns - 1:
-            send_serial_command("MOVE_BACKWARD", robot_size / 1.2)  # Move slightly back
-            send_serial_command("ROTATE_RIGHT", 97)  # Rotate left to face the next row
-            send_serial_command("MOVE_BACKWARD", tile_width / 2)  # Move slightly back
-            send_serial_command("MOVE_FORWARD", max_row_distance)  # Move forward along the row gap
-            send_serial_command("MOVE_BACKWARD", tile_width / 1.2)  # Move slightly back
-            send_serial_command("ROTATE_RIGHT", 97)  # Rotate again to face back along the row
-            send_serial_command("MOVE_BACKWARD", tile_width / 2)  # Move slightly back
-
-        # Move along the next row
-        send_serial_command("MOVE_FORWARD", max_col_distance)
-    
-        # Safety stop to avoid getting too close to the wall
+            rotate()
+            send_serial_command("MOVE_FORWARD", max_row_distance) # 120.75
+            rotate()
+            
         send_serial_command("STOP")
 
-    # Complete final row (if needed)
+    def rotate():
+        send_serial_command("MOVE_BACKWARD", total_tile_width / 1.2) # 33.54
+        send_serial_command("ROTATE_RIGHT", 97) # 90 deg
+        send_serial_command("MOVE_BACKWARD", total_tile_width / 2) # 20
+    
+    
     print("Automatic mode completed")
 
 if __name__ == '__main__':
