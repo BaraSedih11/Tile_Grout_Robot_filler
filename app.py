@@ -22,15 +22,15 @@ arduino = serial.Serial(port='/dev/ttyACM1', baudrate=9600, timeout=1)
 arduino.flush()
 
 # Movement commands using serial communication with Arduino
-def send_serial_command(command, value=0):
+def send_serial_command(command):
     """Send a command over serial to the Arduino and wait for the 'DONE' response."""
     if arduino.is_open:
         if command in ['APPLY', 'EMPTY', 'STOP']:
             arduino.write(f"{command}\n".encode())
             print(f"Sent command: {command}")
         else:
-            arduino.write(f"{command} {value}\n".encode())
-            print(f"Sent command: {command} {value}")
+            arduino.write(f"{command}\n".encode())
+            print(f"Sent command: {command}")
         
         while True:
             if arduino.in_waiting > 0:  # Check if there's incoming data in the serial buffer
@@ -120,15 +120,15 @@ def command():
             return jsonify({"error": "Missing 'command' in request"}), 400
 
         if command == "MOVE_FORWARD":
-            send_serial_command("MOVE_FORWARD", value)
+            send_serial_command(f"MOVE_FORWARD {value}")
         elif command == "MOVE_BACKWARD":
-            send_serial_command("MOVE_BACKWARD", value)
+            send_serial_command(f"MOVE_BACKWARD {value}")
         elif command == "ROTATE_LEFT":
-            send_serial_command("ROTATE_LEFT", value)
+            send_serial_command(f"ROTATE_LEFT {value}")
         elif command == "ROTATE_RIGHT":
-            send_serial_command("ROTATE_RIGHT", value)
+            send_serial_command(f"ROTATE_RIGHT {value}")
         elif command == "MOVE_FRONT":
-            send_serial_command("MOVE_FRONT", value)
+            send_serial_command(f"MOVE_FRONT {value}")
         elif command == "APPLY":
             send_serial_command("APPLY")
         elif command == "EMPTY":
