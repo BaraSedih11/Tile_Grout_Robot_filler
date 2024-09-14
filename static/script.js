@@ -5,8 +5,11 @@ function sendCommand(command) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ command: command }),
-  });
+    body: JSON.stringify({ command: "MOVE_FORWARD", value: 10 }),
+  })
+    .then((response) => response.json())
+    .then((data) => console.log(data))
+    .catch((error) => console.error("Error:", error));
 }
 
 // Event listeners for the buttons
@@ -44,36 +47,35 @@ document.getElementById("automatic").addEventListener("click", function () {
   const columns = document.getElementById("columns").value;
   let gaps = document.getElementById("gaps").value;
 
-  gaps = gaps / 10;  // Convert gaps from mm to cm
+  gaps = gaps / 10; // Convert gaps from mm to cm
 
   const requestData = {
-      width: parseInt(width),
-      rows: parseInt(rows),
-      columns: parseInt(columns),
-      gaps: parseFloat(gaps)
+    width: parseInt(width),
+    rows: parseInt(rows),
+    columns: parseInt(columns),
+    gaps: parseFloat(gaps),
   };
 
   fetch("/automatic-mode", {
-      method: "POST",
-      headers: {
-          "Content-Type": "application/json"
-      },
-      body: JSON.stringify(requestData)
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestData),
   })
-  .then(response => {
+    .then((response) => {
       if (!response.ok) {
-          throw new Error("Error initiating automatic mode");
+        throw new Error("Error initiating automatic mode");
       }
       return response.json();
-  })
-  .then(data => {
+    })
+    .then((data) => {
       console.log("Automatic mode initiated:", data);
-  })
-  .catch(error => {
+    })
+    .catch((error) => {
       console.error("Error:", error);
-  });
+    });
 });
-
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
