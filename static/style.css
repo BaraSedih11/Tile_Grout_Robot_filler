@@ -17,6 +17,9 @@ body {
   align-items: center;
   gap: 30px;
   padding: 20px;
+  background-color: #f2f6fc;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .manual-mode, .automatic-mode {
@@ -32,13 +35,15 @@ body {
 } 
 
 .manual-mode {
-  background-color: #f9f9f9;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 120px 120px 120px 120px; /* Added fourth row */
-  grid-gap: 20px;
-  justify-items: center;
-  align-items: center;
+  margin: 10px 0;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+  background-color: #fff;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .grout {
@@ -56,15 +61,15 @@ body {
 }
 
 .automatic-mode {
-  background-color: #eef5ff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0 8px 16px rgba(0, 123, 255, 0.2); /* Subtle shadow for depth */
-  max-width: 400px; /* Limits the width */
-  width: 100%; /* Makes it responsive */
+  margin: 10px 0;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+  background-color: #fff;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
@@ -224,4 +229,20 @@ input:focus {
   .auto-btn {
     width: 100%; /* Make the button responsive */
   }
+}
+
+.video-container {
+  width: 640px;
+  height: 480px;
+  margin: 20px auto;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.video-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
 }
