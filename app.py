@@ -12,9 +12,11 @@ cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     print("Error: Could not open video device.")
 
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)  # Set frame width
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)  # Set frame height
-cap.set(cv2.CAP_PROP_FPS, 20)  # Set frame rate
+
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+cap.set(cv2.CAP_PROP_FPS, 20)
+
 
 # A flag to stop the video thread
 video_running = True
@@ -102,11 +104,11 @@ def gen_frames():
             print("Error: Failed to capture frame.")
             break
         else:
+            print("Frame captured successfully.")
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
 
 
 
