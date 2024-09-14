@@ -19,7 +19,7 @@ document.getElementById("back").addEventListener("click", function () {
 });
 
 document.getElementById("left").addEventListener("click", function () {
-  sendCommand("ROTATE_LEFT ");
+  sendCommand("ROTATE_LEFT 1");
 });
 
 document.getElementById("right").addEventListener("click", function () {
