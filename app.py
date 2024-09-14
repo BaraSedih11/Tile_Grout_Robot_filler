@@ -175,7 +175,7 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
     def rotate():
         send_serial_command("MOVE_BACKWARD", total_tile_width / 1.25) # 32.2
         send_serial_command("ROTATE_RIGHT", 97) # 90 deg
-        send_serial_command("MOVE_BACKWARD", total_tile_width / 3) # 23
+        send_serial_command("MOVE_BACKWARD", total_tile_width / 3.5) # 23
         
     for col in range(columns - 1):
         send_serial_command("MOVE_FORWARD", max_col_distance) # 80.5
