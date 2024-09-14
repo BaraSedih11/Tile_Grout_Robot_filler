@@ -165,7 +165,7 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
     total_tile_width = tile_width + gaps  # Total width including gaps
     max_col_distance = (columns - 1) * total_tile_width  # Maximum column distance
     max_row_distance = (rows - 1) * total_tile_width  # Maximum row distance
-    step_size = 20  # Define a smaller step size for movement
+    step_size = 10  # Define a smaller step size for movement
 
     def move_in_steps(total_distance):
         # Move in smaller increments, correcting path between steps
