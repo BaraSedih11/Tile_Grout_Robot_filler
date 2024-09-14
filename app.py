@@ -164,12 +164,12 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
                     send_serial_command(f"ROTATE_LEFT {5}")  # Adjust left
 
     for col in range(columns - 1):
-        send_serial_command("MOVE_FORWARD", max_col_distance)  # 80.5
+        send_serial_command(f"MOVE_FORWARD {max_col_distance}")  # 80.5
         correct_path()
 
         if col < columns - 1:
             rotate()
-            send_serial_command("MOVE_FORWARD", max_row_distance)  # 120.75
+            send_serial_command(f"MOVE_FORWARD {max_row_distance}")  # 120.75
             correct_path()
             rotate()
             
