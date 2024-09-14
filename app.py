@@ -46,20 +46,41 @@ class Processing:
             gray = image
         else:
             gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        blurred = cv2.GaussianBlur(gray, (3, 3), 0)
-        edges = cv2.Canny(blurred, 50, 150, apertureSize=3)
+        
+        # Apply a bilateral filter to preserve edges
+        filtered = cv2.bilateralFilter(gray, 9, 75, 75)
+        
+        # Apply Canny edge detection
+        edges = cv2.Canny(filtered, 50, 150, apertureSize=3)
+        
+        # Perform morphological operations to enhance edges
+        kernel = np.ones((3, 3), np.uint8)
+        edges = cv2.dilate(edges, kernel, iterations=1)
+        edges = cv2.erode(edges, kernel, iterations=1)
+        
         return edges
 
     def detect_gap(self, edges):
-        lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=50, minLineLength=20, maxLineGap=5)
+        # Refine line detection parameters
+        lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=100, minLineLength=30, maxLineGap=10)
         if lines is None:
             return False, None
+        
+        frame_center = 320  # Assuming frame width is 640
+        center_xs = []
         for line in lines:
             x1, y1, x2, y2 = line[0]
-            if abs(x2 - x1) < 10 and abs(y2 - y1) > 10:
+            if abs(x2 - x1) < 10 and abs(y2 - y1) > 20:  # Detect mostly vertical lines
                 center_x = (x1 + x2) // 2
-                return True, center_x
-        return False, None
+                center_xs.append(center_x)
+        
+        if not center_xs:
+            return False, None
+        
+        # Use the average center of detected lines to correct the path
+        average_center_x = int(np.mean(center_xs))
+        return True, average_center_x
+
 
 def capture_frame():
     frame = picam2.capture_array()
@@ -146,19 +167,6 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
     max_row_distance = (rows - 1) * total_tile_width  # Maximum row distance
     step_size = 20  # Define a smaller step size for movement
 
-    def correct_path():
-        # Correct path based on camera feedback
-        gap_detected, center_x = check_gap_status()
-        if gap_detected:
-            frame_center = 320  # Assuming frame width is 640
-            offset = center_x - frame_center
-            print(f"Path correction needed, offset: {offset}")
-            if abs(offset) > 50:  # If the deviation is significant
-                if offset > 0:
-                    send_serial_command(f"ROTATE_RIGHT {5}")  # Adjust right
-                else:
-                    send_serial_command(f"ROTATE_LEFT {5}")  # Adjust left
-    
     def move_in_steps(total_distance):
         # Move in smaller increments, correcting path between steps
         remaining_distance = total_distance
@@ -167,6 +175,23 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
             send_serial_command(f"MOVE_FORWARD {move_distance}")
             correct_path()
             remaining_distance -= move_distance
+
+    def correct_path():
+        # Correct path based on camera feedback
+        gap_detected, center_x = check_gap_status()
+        if gap_detected:
+            frame_center = 320  # Assuming frame width is 640
+            offset = center_x - frame_center
+            print(f"Path correction needed, offset: {offset}")
+            
+            # Proportional control for more accurate rotation
+            if abs(offset) > 20:  # Set a smaller threshold for correction
+                rotation_angle = min(10, max(2, int(abs(offset) / 10)))  # Adjust rotation based on offset size
+                if offset > 0:
+                    send_serial_command(f"ROTATE_RIGHT {rotation_angle}")  # Adjust right
+                else:
+                    send_serial_command(f"ROTATE_LEFT {rotation_angle}")  # Adjust left
+
 
     def rotate():
         send_serial_command(f"MOVE_BACKWARD {total_tile_width / 1.25}")  # 32.2
