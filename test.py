@@ -1,7 +1,12 @@
-from flask import Flask, Response
 import cv2
+import numpy as np
+from flask import Flask, request, jsonify, render_template, Response
+import serial  # Serial communication with Arduino
+import time
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 def gen_frames():
     cap = cv2.VideoCapture(0)
