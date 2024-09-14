@@ -104,6 +104,10 @@ def gen_frames():
             frame = buffer.tobytes()
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+    
+    cap.release()
+    cv2.destroyAllWindows()
+
 
 # Route to handle manual commands from the UI
 @app.route('/command', methods=['POST'])
