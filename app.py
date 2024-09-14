@@ -1,21 +1,18 @@
+from picamera2 import Picamera2
 import cv2
 import numpy as np
 from flask import Flask, request, jsonify, render_template, Response
 import serial  # Serial communication with Arduino
 import time
 from flask_cors import CORS
-import subprocess
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-cap = cv2.VideoCapture('libcameravideo0')
-if not cap.isOpened():
-    print("Error: Could not open video device.")
-
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-cap.set(cv2.CAP_PROP_FPS, 20)
+# Initialize Picamera2
+picam2 = Picamera2()
+picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (640, 480)}))
+picam2.start()
 
 # A flag to stop the video thread
 video_running = True
@@ -68,10 +65,8 @@ class Processing:
         return False, None
 
 def capture_frame():
-    # Capture an image using libcamera and save it temporarily
-    subprocess.run(['libcamera-jpeg', '-o', '/tmp/capture.jpg', '--width', '640', '--height', '480', '--timeout', '1'])
-    # Read the image using OpenCV
-    frame = cv2.imread('/tmp/capture.jpg')
+    frame = picam2.capture_array()
+    frame = cv2.cvtColor(frame, cv2.COLOR_XRGB2BGR)
     return frame
 
 def check_gap_status():
@@ -98,8 +93,8 @@ def video_feed():
 
 def gen_frames():
     while video_running:
-        success, frame = cap.read()
-        if not success:
+        frame = capture_frame()
+        if frame is None:
             print("Error: Failed to capture frame.")
             break
         else:
@@ -108,10 +103,9 @@ def gen_frames():
             frame = buffer.tobytes()
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-    
-    cap.release()
-    cv2.destroyAllWindows()
 
+    picam2.stop()
+    cv2.destroyAllWindows()
 
 # Route to handle manual commands from the UI
 @app.route('/command', methods=['POST'])
