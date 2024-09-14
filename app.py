@@ -114,7 +114,7 @@ def command():
         print("Received data:", data)
         command = data.get('command')
         value = data.get('value', None)
-
+        print(command)
         if not command:
             return jsonify({"error": "Missing 'command' in request"}), 400
 
