@@ -117,6 +117,7 @@ def command():
         value = data.get('value', 0)
 
         if not command:
+            print("Error: 'command' not found in the request data.")
             return jsonify({"error": "Missing 'command' in request"}), 400
 
         if command == "MOVE_FORWARD":
@@ -136,12 +137,15 @@ def command():
         elif command == "STOP":
             send_serial_command("STOP")
         else:
+            print(f"Error: Unknown command '{command}'.")
             return jsonify({"error": "Unknown command"}), 400
 
         return jsonify({"response": f"Command {command} executed"})
 
     except Exception as e:
+        print(f"Exception in /command route: {e}")
         return jsonify({"error": str(e)}), 400
+
 
 @app.route('/automatic-mode', methods=['POST'])
 def automatic_mode():
