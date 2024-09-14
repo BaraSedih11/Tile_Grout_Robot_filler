@@ -4,11 +4,12 @@ from flask import Flask, request, jsonify, render_template, Response
 import serial  # Serial communication with Arduino
 import time
 from flask_cors import CORS
+import subprocess
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('libcameravideo0')
 if not cap.isOpened():
     print("Error: Could not open video device.")
 
@@ -67,154 +68,10 @@ class Processing:
         return False, None
 
 def capture_frame():
-    ret, frame = cap.read()
-    return frame
-
-def check_gap_status():
-    frame = capture_frame()
-    processing = Processing()
-    edges = processing.preprocess_image(frame)
-    gap_detected, center_x = processing.detect_gap(edges)
-    return gap_detected, center_x
-
-# Serve the frontend
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-# Flask API Routes
-@app.route('/check-gap', methods=['GET'])
-def check_gap():
-    gap_detected, _ = check_gap_status()
-    return jsonify(gapDetected=gap_detected)
-
-@app.route('/video_feed')
-def video_feed():
-    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-def gen_frames():
-    while video_running:
-        success, frame = cap.read()
-        if not success:
-            print("Error: Failed to capture frame.")
-            break
-        else:
-            print("Frame captured successfully.")
-            ret, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-    
-    cap.release()
-    cv2.destroyAllWindows()
-
-
-# Route to handle manual commands from the UI
-@app.route('/command', methods=['POST'])
-def command():
-    try:
-        data = request.get_json()
-        print("Received data:", data)
-        command = data.get('command')
-        value = data.get('value', 0)
-
-        if not command:
-            return jsonify({"error": "Missing 'command' in request"}), 400
-
-        if command == "MOVE_FORWARD":
-            send_serial_command("MOVE_FORWARD", value)
-        elif command == "MOVE_BACKWARD":
-            send_serial_command("MOVE_BACKWARD", value)
-        elif command == "ROTATE_LEFT":
-            send_serial_command("ROTATE_LEFT", value)
-        elif command == "ROTATE_RIGHT":
-            send_serial_command("ROTATE_RIGHT", value)
-        elif command == "MOVE_FRONT":
-            send_serial_command("MOVE_FRONT", value)
-        elif command == "APPLY":
-            send_serial_command("APPLY")
-        elif command == "EMPTY":
-            send_serial_command("EMPTY")
-        elif command == "STOP":
-            send_serial_command("STOP")
-        else:
-            return jsonify({"error": "Unknown command"}), 400
-
-        return jsonify({"response": f"Command {command} executed"})
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
-
-import cv2
-import numpy as np
-from flask import Flask, request, jsonify, render_template, Response
-import serial  # Serial communication with Arduino
-import time
-from flask_cors import CORS
-
-app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
-
-cap = cv2.VideoCapture(0)
-if not cap.isOpened():
-    print("Error: Could not open video device.")
-
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-cap.set(cv2.CAP_PROP_FPS, 20)
-
-# A flag to stop the video thread
-video_running = True
-
-# Set up the serial connection to Arduino
-arduino = serial.Serial(port='/dev/ttyACM0', baudrate=9600, timeout=1)
-arduino.flush()
-
-# Movement commands using serial communication with Arduino
-def send_serial_command(command, value=0):
-    """Send a command over serial to the Arduino and wait for the 'DONE' response."""
-    if arduino.is_open:
-        if command in ['APPLY', 'EMPTY', 'STOP']:
-            arduino.write(f"{command}\n".encode())
-            print(f"Sent command: {command}")
-        else:
-            arduino.write(f"{command} {value}\n".encode())
-            print(f"Sent command: {command} {value}")
-        
-        while True:
-            if arduino.in_waiting > 0:  # Check if there's incoming data in the serial buffer
-                response = arduino.readline().decode().strip()
-                print(f"Arduino response: {response}")
-                if response == "DONE":  # Exit the loop if 'DONE' is received
-                    break
-            time.sleep(0.1)  # Add a small delay to avoid excessive CPU usage in the loop
-    else:
-        print("Serial port not open")
-
-# Image processing and gap detection logic (camera input)
-class Processing:
-    def preprocess_image(self, image):
-        if len(image.shape) == 2:
-            gray = image
-        else:
-            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        blurred = cv2.GaussianBlur(gray, (3, 3), 0)
-        edges = cv2.Canny(blurred, 50, 150, apertureSize=3)
-        return edges
-
-    def detect_gap(self, edges):
-        lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=50, minLineLength=20, maxLineGap=5)
-        if lines is None:
-            return False, None
-        for line in lines:
-            x1, y1, x2, y2 = line[0]
-            if abs(x2 - x1) < 10 and abs(y2 - y1) > 10:
-                center_x = (x1 + x2) // 2
-                return True, center_x
-        return False, None
-
-def capture_frame():
-    ret, frame = cap.read()
+    # Capture an image using libcamera and save it temporarily
+    subprocess.run(['libcamera-jpeg', '-o', '/tmp/capture.jpg', '--width', '640', '--height', '480', '--timeout', '1'])
+    # Read the image using OpenCV
+    frame = cv2.imread('/tmp/capture.jpg')
     return frame
 
 def check_gap_status():
