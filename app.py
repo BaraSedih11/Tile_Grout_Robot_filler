@@ -22,12 +22,10 @@ arduino = serial.Serial(port='/dev/ttyACM1', baudrate=9600, timeout=1)
 arduino.flush()
 
 # Movement commands using serial communication with Arduino
-def send_serial_command(command, value=None):
+def send_serial_command(command):
     """Send a command over serial to the Arduino and wait for the 'DONE' response."""
     if arduino.is_open:
-        if value is not None:
-            command = f"{command} {value}"
-        print(command, value)
+        
         arduino.write(f"{command}\n".encode())
         print(f"Sent command: {command}")
         
@@ -113,17 +111,8 @@ def command():
         data = request.get_json()
         print("Received data:", data)
         command = data.get('command')
-        value = data.get('value', None)
-        print(command)
-        if not command:
-            return jsonify({"error": "Missing 'command' in request"}), 400
-
-        if command in ["MOVE_FORWARD", "MOVE_BACKWARD", "ROTATE_LEFT", "ROTATE_RIGHT", "MOVE_FRONT"]:
-            send_serial_command(command, value)
-        elif command in ["APPLY", "EMPTY", "STOP"]:
-            send_serial_command(command)
-        else:
-            return jsonify({"error": "Unknown command"}), 400
+        
+        send_serial_command(command)
 
         return jsonify({"response": f"Command {command} executed"})
 
