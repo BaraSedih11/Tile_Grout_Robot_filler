@@ -19,11 +19,11 @@ document.getElementById("back").addEventListener("click", function () {
 });
 
 document.getElementById("left").addEventListener("click", function () {
-  sendCommand("ROTATE_LEFT 10");
+  sendCommand("ROTATE_LEFT ");
 });
 
 document.getElementById("right").addEventListener("click", function () {
-  sendCommand("ROTATE_RIGHT 10");
+  sendCommand("ROTATE_RIGHT 1");
 });
 
 document.getElementById("stop").addEventListener("click", function () {
