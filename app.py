@@ -141,10 +141,11 @@ def automatic_mode():
 
 # Automatic mode handler with path correction
 def run_automatic_mode(tile_width, rows, columns, gaps):
-    total_tile_width = tile_width + gaps  # 40.25
-    max_col_distance = (columns - 1) * total_tile_width  # 80.5
-    max_row_distance = (rows - 1) * total_tile_width  # 120.75
-    
+    total_tile_width = tile_width + gaps  # Total width including gaps
+    max_col_distance = (columns - 1) * total_tile_width  # Maximum column distance
+    max_row_distance = (rows - 1) * total_tile_width  # Maximum row distance
+    step_size = 20  # Define a smaller step size for movement
+
     def correct_path():
         # Correct path based on camera feedback
         gap_detected, center_x = check_gap_status()
@@ -158,28 +159,32 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
                 else:
                     send_serial_command(f"ROTATE_LEFT {5}")  # Adjust left
     
+    def move_in_steps(total_distance):
+        # Move in smaller increments, correcting path between steps
+        remaining_distance = total_distance
+        while remaining_distance > 0:
+            move_distance = min(step_size, remaining_distance)
+            send_serial_command(f"MOVE_FORWARD {move_distance}")
+            correct_path()
+            remaining_distance -= move_distance
+
     def rotate():
         send_serial_command(f"MOVE_BACKWARD {total_tile_width / 1.25}")  # 32.2
         send_serial_command(f"ROTATE_RIGHT {97}")  # 90 deg
         send_serial_command(f"MOVE_BACKWARD {total_tile_width / 3.5}")  # 23
 
     for col in range(columns - 1):
-        correct_path()
-        correct_path()
-        correct_path()
-        send_serial_command(f"MOVE_FORWARD {max_col_distance}")  # 80.5
+        move_in_steps(max_col_distance)
 
         if col < columns - 1:
             rotate()
-            correct_path()
-            correct_path()
-            correct_path()
-            send_serial_command(f"MOVE_FORWARD {max_row_distance}")  # 120.75
+            move_in_steps(max_row_distance)
             rotate()
             
         send_serial_command("STOP")
     
     print("Automatic mode completed")
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
