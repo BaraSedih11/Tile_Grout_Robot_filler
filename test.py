@@ -8,6 +8,7 @@ def gen_frames():
     while True:
         success, frame = cap.read()
         if not success:
+            print("Error: Failed to capture frame.")
             break
         else:
             ret, buffer = cv2.imencode('.jpg', frame)
