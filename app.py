@@ -27,7 +27,7 @@ def send_serial_command(command, value=None):
     if arduino.is_open:
         if value is not None:
             command = f"{command} {value}"
-        
+        print(command, value)
         arduino.write(f"{command}\n".encode())
         print(f"Sent command: {command}")
         
@@ -119,8 +119,6 @@ def command():
             return jsonify({"error": "Missing 'command' in request"}), 400
 
         if command in ["MOVE_FORWARD", "MOVE_BACKWARD", "ROTATE_LEFT", "ROTATE_RIGHT", "MOVE_FRONT"]:
-            if value is None:
-                return jsonify({"error": f"Missing 'value' for command '{command}'"}), 400
             send_serial_command(command, value)
         elif command in ["APPLY", "EMPTY", "STOP"]:
             send_serial_command(command)
@@ -130,9 +128,7 @@ def command():
         return jsonify({"response": f"Command {command} executed"})
 
     except Exception as e:
-        print(f"Exception in /command route: {e}")
         return jsonify({"error": str(e)}), 400
-
 
 @app.route('/automatic-mode', methods=['POST'])
 def automatic_mode():
