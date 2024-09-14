@@ -154,9 +154,9 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
             print(f"Path correction needed, offset: {offset}")
             if abs(offset) > 50:  # If the deviation is significant
                 if offset > 0:
-                    send_serial_command(f"ROTATE_RIGHT {10}")  # Adjust right
+                    send_serial_command(f"ROTATE_RIGHT {5}")  # Adjust right
                 else:
-                    send_serial_command(f"ROTATE_LEFT {10}")  # Adjust left
+                    send_serial_command(f"ROTATE_LEFT {5}")  # Adjust left
     
     def rotate():
         send_serial_command(f"MOVE_BACKWARD {total_tile_width / 1.25}")  # 32.2
@@ -166,14 +166,21 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
         send_serial_command(f"MOVE_BACKWARD {total_tile_width / 3.5}")  # 23
 
     for col in range(columns - 1):
-        send_serial_command(f"MOVE_FORWARD {max_col_distance}")  # 80.5
         correct_path()
+        correct_path()
+        correct_path()
+        correct_path()
+        correct_path()
+        send_serial_command(f"MOVE_FORWARD {max_col_distance}")  # 80.5
 
         if col < columns - 1:
             rotate()
             correct_path()
-            send_serial_command(f"MOVE_FORWARD {max_row_distance}")  # 120.75
             correct_path()
+            correct_path()
+            correct_path()
+            correct_path()
+            send_serial_command(f"MOVE_FORWARD {max_row_distance}")  # 120.75
             rotate()
             
         send_serial_command("STOP")
