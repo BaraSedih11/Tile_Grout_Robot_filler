@@ -25,12 +25,8 @@ arduino.flush()
 def send_serial_command(command):
     """Send a command over serial to the Arduino and wait for the 'DONE' response."""
     if arduino.is_open:
-        if command in ['APPLY', 'EMPTY', 'STOP']:
-            arduino.write(f"{command}\n".encode())
-            print(f"Sent command: {command}")
-        else:
-            arduino.write(f"{command}\n".encode())
-            print(f"Sent command: {command}")
+        arduino.write(f"{command}\n".encode())
+        print(f"Sent command: {command}")
         
         while True:
             if arduino.in_waiting > 0:  # Check if there's incoming data in the serial buffer
