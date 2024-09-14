@@ -9,6 +9,12 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
 cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)  # Set frame width
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)  # Set frame height
+cap.set(cv2.CAP_PROP_FPS, 20)  # Set frame rate
+
+# A flag to stop the video thread
+video_running = True
 
 # Set up the serial connection to Arduino
 arduino = serial.Serial(port='/dev/ttyACM0', baudrate=9600, timeout=1)
@@ -60,9 +66,7 @@ class Processing:
         return False
 
 def capture_frame():
-    cap = cv2.VideoCapture(0)  # 0 for default camera
     ret, frame = cap.read()
-    cap.release()
     return frame
 
 def check_gap_status():
@@ -71,6 +75,7 @@ def check_gap_status():
     edges = processing.preprocess_image(frame)
     gap_detected = processing.detect_gap(edges)
     return gap_detected
+
 
 # Serve the frontend
 @app.route('/')
@@ -88,7 +93,7 @@ def video_feed():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 def gen_frames():
-    while True:
+    while video_running:
         ret, frame = cap.read()
         if not ret:
             break
