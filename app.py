@@ -27,7 +27,6 @@ arduino.flush()
 def send_serial_command(command, value=0):
     """Send a command over serial to the Arduino and wait for the 'DONE' response."""
     if arduino.is_open:
-        # Write the command to the serial based on whether it has a value or not
         if command in ['APPLY', 'EMPTY', 'STOP']:
             arduino.write(f"{command}\n".encode())
             print(f"Sent command: {command}")
@@ -35,10 +34,9 @@ def send_serial_command(command, value=0):
             arduino.write(f"{command} {value}\n".encode())
             print(f"Sent command: {command} {value}")
         
-        # Wait for the 'DONE' response from Arduino
         while True:
             if arduino.in_waiting > 0:  # Check if there's incoming data in the serial buffer
-                response = arduino.readline().decode().strip()  # Read the incoming serial data
+                response = arduino.readline().decode().strip()
                 print(f"Arduino response: {response}")
                 if response == "DONE":  # Exit the loop if 'DONE' is received
                     break
@@ -60,12 +58,13 @@ class Processing:
     def detect_gap(self, edges):
         lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=50, minLineLength=20, maxLineGap=5)
         if lines is None:
-            return False
+            return False, None
         for line in lines:
             x1, y1, x2, y2 = line[0]
             if abs(x2 - x1) < 10 and abs(y2 - y1) > 10:
-                return True
-        return False
+                center_x = (x1 + x2) // 2
+                return True, center_x
+        return False, None
 
 def capture_frame():
     ret, frame = cap.read()
@@ -75,8 +74,8 @@ def check_gap_status():
     frame = capture_frame()
     processing = Processing()
     edges = processing.preprocess_image(frame)
-    gap_detected = processing.detect_gap(edges)
-    return gap_detected
+    gap_detected, center_x = processing.detect_gap(edges)
+    return gap_detected, center_x
 
 # Serve the frontend
 @app.route('/')
@@ -86,7 +85,7 @@ def index():
 # Flask API Routes
 @app.route('/check-gap', methods=['GET'])
 def check_gap():
-    gap_detected = check_gap_status()
+    gap_detected, _ = check_gap_status()
     return jsonify(gapDetected=gap_detected)
 
 @app.route('/video_feed')
@@ -110,21 +109,14 @@ def gen_frames():
 @app.route('/command', methods=['POST'])
 def command():
     try:
-        # Log the incoming request body for debugging
         data = request.get_json()
-        print("Received data:", data)  # Check the received data structure
-
-        # Ensure that 'command' is present in the request body
+        print("Received data:", data)
         command = data.get('command')
         value = data.get('value', 0)
-
-        print("Command:", command)
-        print("Value:", value)
 
         if not command:
             return jsonify({"error": "Missing 'command' in request"}), 400
 
-        # Execute the command received from the client
         if command == "MOVE_FORWARD":
             send_serial_command("MOVE_FORWARD", value)
         elif command == "MOVE_BACKWARD":
@@ -152,10 +144,7 @@ def command():
 @app.route('/automatic-mode', methods=['POST'])
 def automatic_mode():
     try:
-        # Log the request to verify it's received
         print("Automatic mode request received")
-
-        # Get parameters for automatic mode from request
         data = request.get_json()
         print("Received data for automatic mode:", data)
 
@@ -164,7 +153,6 @@ def automatic_mode():
         columns = data.get('columns', 3)
         gaps = data.get('gaps', 2)
 
-        # Run the automatic mode with the given parameters
         run_automatic_mode(width, rows, columns, gaps)
 
         return jsonify({"response": "Automatic mode initiated"})
@@ -173,10 +161,9 @@ def automatic_mode():
         print(f"Error in automatic mode: {e}")
         return jsonify({"error": str(e)}), 400
 
-# Automatic mode handler
+# Automatic mode handler with path correction
 def run_automatic_mode(tile_width, rows, columns, gaps):
     total_tile_width = tile_width + gaps  # 40.25
-    
     max_col_distance = (columns - 1) * total_tile_width  # 80.5
     max_row_distance = (rows - 1) * total_tile_width  # 120.75
     
@@ -184,13 +171,28 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
         send_serial_command("MOVE_BACKWARD", total_tile_width / 1.25)  # 32.2
         send_serial_command("ROTATE_RIGHT", 97)  # 90 deg
         send_serial_command("MOVE_BACKWARD", total_tile_width / 3.5)  # 23
-        
+
+    def correct_path():
+        # Correct path based on camera feedback
+        gap_detected, center_x = check_gap_status()
+        if gap_detected:
+            frame_center = 320  # Assuming frame width is 640
+            offset = center_x - frame_center
+            print(f"Path correction needed, offset: {offset}")
+            if abs(offset) > 50:  # If the deviation is significant
+                if offset > 0:
+                    send_serial_command("ROTATE_RIGHT", 5)  # Adjust right
+                else:
+                    send_serial_command("ROTATE_LEFT", 5)  # Adjust left
+
     for col in range(columns - 1):
         send_serial_command("MOVE_FORWARD", max_col_distance)  # 80.5
+        correct_path()
 
         if col < columns - 1:
             rotate()
             send_serial_command("MOVE_FORWARD", max_row_distance)  # 120.75
+            correct_path()
             rotate()
             
         send_serial_command("STOP")
@@ -198,5 +200,4 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
     print("Automatic mode completed")
 
 if __name__ == '__main__':
-    # Serve the application on port 5000
     app.run(host='0.0.0.0', port=5000)
