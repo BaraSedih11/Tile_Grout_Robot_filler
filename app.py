@@ -8,6 +8,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
+cap = cv2.VideoCapture(0)
 
 # Set up the serial connection to Arduino
 arduino = serial.Serial(port='/dev/ttyACM0', baudrate=9600, timeout=1)
@@ -84,16 +85,17 @@ def check_gap():
 
 @app.route('/video_feed')
 def video_feed():
-    def generate():
-        cap = cv2.VideoCapture(0)  # 0 for default camera
-        while True:
-            ret, frame = cap.read()
-            _, jpeg = cv2.imencode('.jpg', frame)
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n')
-        cap.release()
+    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-    return Response(generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
+def gen_frames():
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+        ret, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 # Route to handle manual commands from the UI
 @app.route('/command', methods=['POST'])

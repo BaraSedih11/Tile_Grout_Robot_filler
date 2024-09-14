@@ -11,9 +11,10 @@ body {
 }
 
 .controller {
-  margin-top: 100px; /* Add some space between the top of the page and the buttons */
-  display: flex;
-  flex-direction: column;
+  margin-top: 10%; /* Add some space between the top of the page and the buttons */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  
   align-items: center;
   gap: 30px;
   padding: 20px;
@@ -35,7 +36,9 @@ body {
 } 
 
 .manual-mode {
-  margin: 10px 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 10px 10px;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 12px;
@@ -44,6 +47,7 @@ body {
   text-align: center;
   background-color: #fff;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  grid-template-rows: repeat(3, 1fr); /* Add this line to define 3 rows */
 }
 
 .grout {
@@ -183,24 +187,29 @@ input:focus {
   transition: background-color 0.3s ease, transform 0.1s ease;
 }
 
-#left {
-  grid-column: 1;
-  grid-row: 2;
+#stop {
+  grid-column: 2; /* Place the stop button in the second column */
+  grid-row: 2; /* Place the stop button in the second row */
 }
 
 #front {
-  grid-column: 2;
-  grid-row: 1;
-}
-
-#right {
-  grid-column: 3;
-  grid-row: 2;
+  grid-column: 2; /* Place the front button in the second column */
+  grid-row: 1; /* Place the front button in the first row */
 }
 
 #back {
-  grid-column: 2;
-  grid-row: 3;
+  grid-column: 2; /* Place the back button in the second column */
+  grid-row: 3; /* Place the back button in the third row */
+}
+
+#left {
+  grid-column: 1; /* Place the left button in the first column */
+  grid-row: 2; /* Place the left button in the second row */
+}
+
+#right {
+  grid-column: 3; /* Place the right button in the third column */
+  grid-row: 2; /* Place the right button in the second row */
 }
 
 #applyGrout {
