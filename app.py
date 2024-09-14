@@ -99,12 +99,15 @@ def gen_frames():
     while video_running:
         success, frame = cap.read()
         if not success:
+            print("Error: Failed to capture frame.")
             break
         else:
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+
 
 
 # Route to handle manual commands from the UI
