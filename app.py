@@ -66,7 +66,8 @@ class Processing:
 
 def capture_frame():
     frame = picam2.capture_array()
-    frame = cv2.cvtColor(frame, cv2.COLOR_XRGB2BGR)
+    # Extract only RGB channels from the XRGB8888 format
+    frame = frame[:, :, :3]  # Extract RGB ignoring the alpha channel
     return frame
 
 def check_gap_status():
