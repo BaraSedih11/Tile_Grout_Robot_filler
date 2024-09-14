@@ -167,14 +167,10 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
         correct_path()
         correct_path()
         correct_path()
-        correct_path()
-        correct_path()
         send_serial_command(f"MOVE_FORWARD {max_col_distance}")  # 80.5
 
         if col < columns - 1:
             rotate()
-            correct_path()
-            correct_path()
             correct_path()
             correct_path()
             correct_path()
