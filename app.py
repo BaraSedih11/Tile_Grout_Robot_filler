@@ -12,11 +12,9 @@ cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     print("Error: Could not open video device.")
 
-
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 cap.set(cv2.CAP_PROP_FPS, 20)
-
 
 # A flag to stop the video thread
 video_running = True
@@ -47,7 +45,6 @@ def send_serial_command(command, value=0):
             time.sleep(0.1)  # Add a small delay to avoid excessive CPU usage in the loop
     else:
         print("Serial port not open")
-    
 
 # Image processing and gap detection logic (camera input)
 class Processing:
@@ -81,7 +78,6 @@ def check_gap_status():
     gap_detected = processing.detect_gap(edges)
     return gap_detected
 
-
 # Serve the frontend
 @app.route('/')
 def index():
@@ -109,8 +105,6 @@ def gen_frames():
             frame = buffer.tobytes()
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-
 
 # Route to handle manual commands from the UI
 @app.route('/command', methods=['POST'])
@@ -154,8 +148,7 @@ def command():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
-    
-    
+
 @app.route('/automatic-mode', methods=['POST'])
 def automatic_mode():
     try:
@@ -180,31 +173,27 @@ def automatic_mode():
         print(f"Error in automatic mode: {e}")
         return jsonify({"error": str(e)}), 400
 
-
 # Automatic mode handler
 def run_automatic_mode(tile_width, rows, columns, gaps):
-        
-    total_tile_width = tile_width + gaps # 40.25
+    total_tile_width = tile_width + gaps  # 40.25
     
     max_col_distance = (columns - 1) * total_tile_width  # 80.5
-    max_row_distance = (rows - 1) * total_tile_width # 120.75
+    max_row_distance = (rows - 1) * total_tile_width  # 120.75
     
     def rotate():
-        send_serial_command("MOVE_BACKWARD", total_tile_width / 1.25) # 32.2
-        send_serial_command("ROTATE_RIGHT", 97) # 90 deg
-        send_serial_command("MOVE_BACKWARD", total_tile_width / 3.5) # 23
+        send_serial_command("MOVE_BACKWARD", total_tile_width / 1.25)  # 32.2
+        send_serial_command("ROTATE_RIGHT", 97)  # 90 deg
+        send_serial_command("MOVE_BACKWARD", total_tile_width / 3.5)  # 23
         
     for col in range(columns - 1):
-        send_serial_command("MOVE_FORWARD", max_col_distance) # 80.5
+        send_serial_command("MOVE_FORWARD", max_col_distance)  # 80.5
 
         if col < columns - 1:
             rotate()
-            send_serial_command("MOVE_FORWARD", max_row_distance) # 120.75
+            send_serial_command("MOVE_FORWARD", max_row_distance)  # 120.75
             rotate()
             
         send_serial_command("STOP")
-
-    
     
     print("Automatic mode completed")
 
