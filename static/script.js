@@ -8,7 +8,6 @@ function sendCommand(command) {
     body: JSON.stringify({ command: "MOVE_FORWARD", value: 10 }),
   })
     .then((response) => response.json())
-    .then((data) => console.log(data))
     .catch((error) => console.error("Error:", error));
 }
 
