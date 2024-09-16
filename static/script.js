@@ -104,7 +104,7 @@ function checkIR() {
 
 function checkSensors(){
   checkIR()
-  checkDistance()
+  // checkDistance()
 }
 
 setInterval(checkSensors, 100);
