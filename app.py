@@ -165,7 +165,7 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
     total_tile_width = tile_width + gaps  # Total width including gaps
     max_col_distance = (columns - 1) * total_tile_width  # Maximum column distance
     max_row_distance = (rows - 1) * total_tile_width  # Maximum row distance
-    step_size = 10  # Define a smaller step size for movement
+    step_size = 5  # Define a smaller step size for movement
 
     def move_in_steps(total_distance):
         # Move in smaller increments, correcting path between steps
@@ -185,8 +185,8 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
             print(f"Path correction needed, offset: {offset}")
             
             # Proportional control for more accurate rotation
-            if abs(offset) > 20:  # Set a smaller threshold for correction
-                rotation_angle = min(10, max(2, int(abs(offset) / 10)))  # Adjust rotation based on offset size
+            if abs(offset) > 10:  # Set a smaller threshold for correction
+                rotation_angle = min(5, max(2, int(abs(offset) / 10)))  # Adjust rotation based on offset size
                 if offset > 0:
                     send_serial_command(f"ROTATE_RIGHT {rotation_angle}")  # Adjust right
                 else:
@@ -206,6 +206,11 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
             move_in_steps(max_row_distance)
             rotate()
             
+        
+        send_serial_command(f"MOVE_FORWARD {max_col_distance+5}")
+        rotate()
+        send_serial_command(f"MOVE_FORWARD {tile_width}")
+        send_serial_command(f"MOVE_FORWARD {max_col_distance}")
         send_serial_command("STOP")
     
     print("Automatic mode completed")
