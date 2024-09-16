@@ -186,7 +186,7 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
             
             # Proportional control for more accurate rotation
             if abs(offset) > 5:  # Set a smaller threshold for correction
-                rotation_angle = min(5, max(1, int(abs(offset) / 3)))  # Adjust rotation based on offset size
+                rotation_angle = min(3, max(1, int(abs(offset) / 5)))  # Adjust rotation based on offset size
                 if offset > 0:
                     send_serial_command(f"ROTATE_RIGHT {rotation_angle}")  # Adjust right
                 else:
