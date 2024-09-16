@@ -83,7 +83,7 @@ function checkDistance() {
   fetch('/check-distance')
       .then(response => response.json())
       .then(data => {
-          document.getElementById('distance-message1').innerText = "distance1";
+          document.getElementById('distance-message1').innerText = "Distance1";
           document.getElementById('distance-message2').innerText = "Distance2";
 
           console.log('Distance Sensor 1:', data.distance1);
