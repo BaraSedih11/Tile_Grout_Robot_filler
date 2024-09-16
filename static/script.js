@@ -92,9 +92,6 @@ function checkDistance() {
       .catch(error => console.error('Error:', error));
 }
 
-// setInterval(checkDistance, 100);
-
-
 function checkIR() {
   fetch('/check-ir')
       .then(response => response.json())
@@ -105,4 +102,9 @@ function checkIR() {
       .catch(error => console.error('Error:', error));
 }
 
-setInterval(checkIR, checkDistance, 100);
+function checkSensors(){
+  checkDistance()
+  checkIR()
+}
+
+setInterval(checkSensors, 100);
