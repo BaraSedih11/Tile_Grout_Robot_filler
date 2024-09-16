@@ -93,19 +93,19 @@ function checkDistance() {
 setInterval(checkDistance, 100);
 
 
-function checkIR() {
-  fetch('/check-ir')
-      .then(response => response.json())
-      .then(data => {
-          document.getElementById('ir-message').innerText = data.message;
-          console.log('IR Sensor:', data.ir);
-      })
-      .catch(error => console.error('Error:', error));
-}
+// function checkIR() {
+//   fetch('/check-ir')
+//       .then(response => response.json())
+//       .then(data => {
+//           document.getElementById('ir-message').innerText = data.message;
+//           console.log('IR Sensor:', data.ir);
+//       })
+//       .catch(error => console.error('Error:', error));
+// }
 
-function checkSensors(){
-  checkIR()
-  // checkDistance()
-}
+// function checkSensors(){
+//   checkIR()
+//   // checkDistance()
+// }
 
 // setInterval(checkSensors, 100);
