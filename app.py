@@ -95,6 +95,7 @@ def measure_distance(trigger_pin, echo_pin):
     time_elapsed = stop_time - start_time
     # Multiply with the speed of sound (34300 cm/s) and divide by 2
     distance = (time_elapsed * 34300) / 2
+    print(f"Measured distance: {distance} cm")
 
     return distance
 
@@ -130,14 +131,15 @@ def check_distance():
         message = "Object detected within 20 cm!"
     else:
         message = "No object within 20 cm."
+    
+    # Debugging output
+    print(f"Distance check message: {message}")
 
-    res = jsonify({
+    return jsonify({
         'distance1': distance1,
         'message': message
     })
 
-    print(res)
-    return res
 
 
 # Movement commands using serial communication with Arduino

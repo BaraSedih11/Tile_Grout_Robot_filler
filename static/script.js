@@ -83,14 +83,15 @@ function checkDistance() {
   fetch('/check-distance')
       .then(response => response.json())
       .then(data => {
-          document.getElementById('distance-message1').innerText = "Distance1";
-          document.getElementById('distance-message2').innerText = "Distance2";
-
+          document.getElementById('distance-message').innerText = data.message;
           console.log('Distance Sensor 1:', data.distance1);
-          console.log('Distance Sensor 2:', data.distance2);
       })
       .catch(error => console.error('Error:', error));
 }
+
+// Call the checkDistance function every 2 seconds
+setInterval(checkDistance, 100);
+
 
 function checkIR() {
   fetch('/check-ir')
@@ -107,4 +108,4 @@ function checkSensors(){
   // checkDistance()
 }
 
-setInterval(checkSensors, 100);
+// setInterval(checkSensors, 100);
