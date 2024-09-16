@@ -18,7 +18,7 @@ picam2.start()
 video_running = True
 
 # Set up the serial connection to Arduino
-arduino = serial.Serial(port='/dev/ttyACM1', baudrate=9600, timeout=1)
+arduino = serial.Serial(port='/dev/ttyACM0', baudrate=9600, timeout=1)
 arduino.flush()
 
 # Movement commands using serial communication with Arduino
