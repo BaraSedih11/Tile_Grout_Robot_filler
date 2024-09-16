@@ -98,27 +98,42 @@ def measure_distance(trigger_pin, echo_pin):
     return distance
 
 
+# @app.route('/check-distance', methods=['GET'])
+# def check_distance():
+#     u1 = False
+#     u2 = False
+    
+#     # Measure distance from both sensors
+#     distance1 = measure_distance(GPIO_TRIGGER_1, GPIO_ECHO_1)
+#     distance2 = measure_distance(GPIO_TRIGGER_2, GPIO_ECHO_2)
+
+#     # Check if either distance is less than or equal to 20 cm
+#     if distance1 <= 20:
+#         u1 = True
+#     if distance2 <= 20:
+#         u2 = True
+
+#     return jsonify({
+#         'u1': u1,
+#         "u2": u2
+        
+#     })
+
 @app.route('/check-distance', methods=['GET'])
 def check_distance():
-    u1 = False
-    u2 = False
-    
-    # Measure distance from both sensors
+    # Measure distance from the ultrasonic sensor
     distance1 = measure_distance(GPIO_TRIGGER_1, GPIO_ECHO_1)
-    distance2 = measure_distance(GPIO_TRIGGER_2, GPIO_ECHO_2)
 
-    # Check if either distance is less than or equal to 20 cm
+    # Check if the distance is less than or equal to 20 cm
     if distance1 <= 20:
-        u1 = True
-    if distance2 <= 20:
-        u2 = True
+        message = "Object detected within 20 cm!"
+    else:
+        message = "No object within 20 cm."
 
     return jsonify({
-        'u1': u1,
-        "u2": u2
-        
+        'distance1': distance1,
+        'message': message
     })
-
 
 
 
@@ -317,9 +332,6 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
     print("Automatic mode completed")
 
 
-@atexit.register
-def cleanup_gpio():
-    GPIO.cleanup()
 
 
 if __name__ == '__main__':
