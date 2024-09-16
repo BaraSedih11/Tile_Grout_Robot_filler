@@ -60,7 +60,7 @@ void loop() {
   if (Serial.available() > 0) {
     command = Serial.readStringUntil('\n');  // Read command from Raspberry Pi
     command.trim();                          // Remove any trailing or leading whitespace
-    Serial.println(command);
+
     // Parse the command and execute actions
     if (command.startsWith("MOVE_FORWARD")) {
       float distance = command.substring(13).toFloat();
