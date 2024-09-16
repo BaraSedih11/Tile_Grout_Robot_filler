@@ -109,9 +109,9 @@ def check_distance():
 
     # Check if either distance is less than or equal to 20 cm
     if distance1 <= 20:
-        u1 = 1
+        u1 = "U1 detect"
     if distance2 <= 20:
-        u2 = 1
+        u2 = "U2 detect"
 
     return jsonify({
         'distance1': distance1,
