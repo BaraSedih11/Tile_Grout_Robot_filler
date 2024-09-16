@@ -131,11 +131,13 @@ def check_distance():
     else:
         message = "No object within 20 cm."
 
-    return jsonify({
+    res = jsonify({
         'distance1': distance1,
         'message': message
     })
 
+    print(res)
+    return res
 
 
 # Movement commands using serial communication with Arduino
