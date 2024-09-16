@@ -37,11 +37,12 @@ GPIO_TRIGGER_2 = 25
 GPIO_ECHO_2 = 8
 
 # Set GPIO Pin for IR Sensor
-GPIO_IR = 5
+# GPIO_IR = 5
 
 # Set GPIO direction (IN)
-GPIO.setup(GPIO_IR, GPIO.IN)
+# GPIO.setup(GPIO_IR, GPIO.IN)
 
+GPIO.setwarnings(False)
 
 # Set GPIO direction (IN / OUT)
 GPIO.setup(GPIO_TRIGGER_1, GPIO.OUT)
@@ -49,26 +50,26 @@ GPIO.setup(GPIO_ECHO_1, GPIO.IN)
 GPIO.setup(GPIO_TRIGGER_2, GPIO.OUT)
 GPIO.setup(GPIO_ECHO_2, GPIO.IN)
 
-def read_ir_sensor(pin):
-    # Read the IR sensor (0 means obstacle detected, 1 means no obstacle)
-    return GPIO.input(pin) == 0  # True if obstacle detected, otherwise False
+# def read_ir_sensor(pin):
+#     # Read the IR sensor (0 means obstacle detected, 1 means no obstacle)
+#     return GPIO.input(pin) == 0  # True if obstacle detected, otherwise False
 
 
-@app.route('/check-ir', methods=['GET'])
-def check_ir():
-    # Read IR sensor
-    ir_detected = read_ir_sensor(GPIO_IR)
+# @app.route('/check-ir', methods=['GET'])
+# def check_ir():
+#     # Read IR sensor
+#     ir_detected = read_ir_sensor(GPIO_IR)
 
-    # Check if the IR sensor detects an obstacle
-    if ir_detected:
-        message = "Obstacle detected by IR sensor!"
-    else:
-        message = "No obstacle detected by IR sensor."
+#     # Check if the IR sensor detects an obstacle
+#     if ir_detected:
+#         message = "Obstacle detected by IR sensor!"
+#     else:
+#         message = "No obstacle detected by IR sensor."
 
-    return jsonify({
-        'ir': ir_detected,
-        'message': message
-    })
+#     return jsonify({
+#         'ir': ir_detected,
+#         'message': message
+#     })
 
 
 def measure_distance(trigger_pin, echo_pin):
