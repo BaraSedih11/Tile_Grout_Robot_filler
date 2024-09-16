@@ -141,7 +141,6 @@ def check_distance():
     })
 
 
-
 # Movement commands using serial communication with Arduino
 def send_serial_command(command):
     """Send a command over serial to the Arduino and wait for the 'DONE' response."""
