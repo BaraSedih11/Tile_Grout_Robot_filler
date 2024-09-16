@@ -5,6 +5,9 @@ from flask import Flask, request, jsonify, render_template, Response
 import serial  # Serial communication with Arduino
 import time
 from flask_cors import CORS
+import RPi.GPIO as GPIO
+import atexit
+
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -20,6 +23,108 @@ video_running = True
 # Set up the serial connection to Arduino
 arduino = serial.Serial(port='/dev/ttyACM0', baudrate=9600, timeout=1)
 arduino.flush()
+
+
+# GPIO Mode (BOARD / BCM)
+GPIO.setmode(GPIO.BCM)
+
+# Set GPIO Pins for Sensor 1
+GPIO_TRIGGER_1 = 23
+GPIO_ECHO_1 = 24
+
+# Set GPIO Pins for Sensor 2
+GPIO_TRIGGER_2 = 25
+GPIO_ECHO_2 = 8
+
+# Set GPIO Pin for IR Sensor
+GPIO_IR = 5
+
+# Set GPIO direction (IN)
+GPIO.setup(GPIO_IR, GPIO.IN)
+
+
+# Set GPIO direction (IN / OUT)
+GPIO.setup(GPIO_TRIGGER_1, GPIO.OUT)
+GPIO.setup(GPIO_ECHO_1, GPIO.IN)
+GPIO.setup(GPIO_TRIGGER_2, GPIO.OUT)
+GPIO.setup(GPIO_ECHO_2, GPIO.IN)
+
+def read_ir_sensor(pin):
+    # Read the IR sensor (0 means obstacle detected, 1 means no obstacle)
+    return GPIO.input(pin) == 0  # True if obstacle detected, otherwise False
+
+
+@app.route('/check-ir', methods=['GET'])
+def check_ir():
+    # Read IR sensor
+    ir_detected = read_ir_sensor(GPIO_IR)
+
+    # Check if the IR sensor detects an obstacle
+    if ir_detected:
+        message = "Obstacle detected by IR sensor!"
+    else:
+        message = "No obstacle detected by IR sensor."
+
+    return jsonify({
+        'ir': ir_detected,
+        'message': message
+    })
+
+
+def measure_distance(trigger_pin, echo_pin):
+    # Set Trigger to HIGH
+    GPIO.output(trigger_pin, True)
+
+    # Set Trigger after 0.01ms to LOW
+    time.sleep(0.00001)
+    GPIO.output(trigger_pin, False)
+
+    start_time = time.time()
+    stop_time = time.time()
+
+    # Save StartTime
+    while GPIO.input(echo_pin) == 0:
+        start_time = time.time()
+
+    # Save time of arrival
+    while GPIO.input(echo_pin) == 1:
+        stop_time = time.time()
+
+    # Time difference between start and arrival
+    time_elapsed = stop_time - start_time
+    # Multiply with the speed of sound (34300 cm/s) and divide by 2
+    distance = (time_elapsed * 34300) / 2
+
+    return distance
+
+
+@app.route('/check-distance', methods=['GET'])
+def check_distance():
+    u1 = 0
+    u2 = 0
+    
+    # Measure distance from both sensors
+    distance1 = measure_distance(GPIO_TRIGGER_1, GPIO_ECHO_1)
+    distance2 = measure_distance(GPIO_TRIGGER_2, GPIO_ECHO_2)
+
+    # Check if either distance is less than or equal to 20 cm
+    if distance1 <= 20:
+        u1 = 1
+    if distance2 <= 20:
+        u2 = 1
+
+    return jsonify({
+        'distance1': distance1,
+        'distance2': distance2,
+        'u1': u1,
+        'u2': u2
+    })
+
+
+@atexit.register
+def cleanup_gpio():
+    GPIO.cleanup()
+
 
 # Movement commands using serial communication with Arduino
 def send_serial_command(command):
