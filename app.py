@@ -100,8 +100,8 @@ def measure_distance(trigger_pin, echo_pin):
 
 @app.route('/check-distance', methods=['GET'])
 def check_distance():
-    u1 = 0
-    u2 = 0
+    u1 = False
+    u2 = False
     
     # Measure distance from both sensors
     distance1 = measure_distance(GPIO_TRIGGER_1, GPIO_ECHO_1)
@@ -109,21 +109,17 @@ def check_distance():
 
     # Check if either distance is less than or equal to 20 cm
     if distance1 <= 20:
-        u1 = "U1 detect"
+        u1 = True
     if distance2 <= 20:
-        u2 = "U2 detect"
+        u2 = True
 
     return jsonify({
-        'distance1': distance1,
-        'distance2': distance2,
         'u1': u1,
-        'u2': u2
+        "u2": u2
+        
     })
 
 
-@atexit.register
-def cleanup_gpio():
-    GPIO.cleanup()
 
 
 # Movement commands using serial communication with Arduino
@@ -319,6 +315,11 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
     send_serial_command("STOP")
     
     print("Automatic mode completed")
+
+
+@atexit.register
+def cleanup_gpio():
+    GPIO.cleanup()
 
 
 if __name__ == '__main__':
