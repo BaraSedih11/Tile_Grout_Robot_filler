@@ -207,10 +207,10 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
             rotate()
             
         
-    send_serial_command(f"MOVE_FORWARD {max_col_distance+5}")
+    move_in_steps(max_col_distance)
     rotate()
-    send_serial_command(f"MOVE_FORWARD {tile_width}")
-    send_serial_command(f"MOVE_FORWARD {max_col_distance}")
+    move_in_steps(tile_width)
+    move_in_steps(max_col_distance)
     send_serial_command("STOP")
     
     print("Automatic mode completed")
