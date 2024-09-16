@@ -92,7 +92,7 @@ function checkDistance() {
       .catch(error => console.error('Error:', error));
 }
 
-setInterval(checkDistance, 100);
+// setInterval(checkDistance, 100);
 
 
 function checkIR() {
@@ -105,4 +105,4 @@ function checkIR() {
       .catch(error => console.error('Error:', error));
 }
 
-setInterval(checkIR, 100);
+setInterval(checkIR, checkDistance, 100);
