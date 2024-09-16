@@ -90,7 +90,7 @@ function checkDistance() {
 }
 
 // Call the checkDistance function every 2 seconds
-setInterval(checkDistance, 100);
+setInterval(checkDistance, 2000);
 
 
 // function checkIR() {
