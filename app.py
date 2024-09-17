@@ -198,21 +198,25 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
         send_serial_command(f"ROTATE_RIGHT {97}")  # 90 deg
         send_serial_command(f"MOVE_BACKWARD {total_tile_width / 3.5}")  # 23
 
-    for col in range(columns - 1):
-        move_in_steps(max_col_distance)
+    # for col in range(columns - 1):
+    move_in_steps(max_col_distance)
 
-        if col < columns - 1:
-            rotate()
-            move_in_steps(max_row_distance)
-            rotate()
+        # if col < columns - 1:
+    rotate()
+    move_in_steps(max_row_distance)
+    rotate()
             
         
-        move_in_steps(max_col_distance+5)
-        rotate()
-        move_in_steps(tile_width)
-        rotate()
-        move_in_steps(max_col_distance)
-        send_serial_command("STOP")
+    move_in_steps(max_col_distance+5)
+    rotate()
+    move_in_steps(max_row_distance)
+    rotate()
+    move_in_steps(max_col_distance)
+    rotate()
+    move_in_steps(tile_width+5)
+    send_serial_command(f"ROTATE_RIGHT {97}")  # 90 deg
+    move_in_steps(max_col_distance)
+    send_serial_command("STOP")
     
     print("Automatic mode completed")
 
