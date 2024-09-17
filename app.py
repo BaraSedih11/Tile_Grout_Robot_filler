@@ -185,8 +185,8 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
             print(f"Path correction needed, offset: {offset}")
             
             # Proportional control for more accurate rotation
-            if abs(offset) > 5:  # Set a smaller threshold for correction
-                rotation_angle = min(5, max(1, int(abs(offset) / 3)))  # Adjust rotation based on offset size
+            if abs(offset) > 4:  # Set a smaller threshold for correction
+                rotation_angle = min(4, max(1, int(abs(offset) / 4)))  # Adjust rotation based on offset size
                 if offset > 0:
                     send_serial_command(f"ROTATE_RIGHT {rotation_angle}")  # Adjust right
                 else:
@@ -210,6 +210,7 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
         move_in_steps(max_col_distance+5)
         rotate()
         move_in_steps(tile_width)
+        rotate()
         move_in_steps(max_col_distance)
         send_serial_command("STOP")
     
