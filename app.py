@@ -207,11 +207,11 @@ def run_automatic_mode(tile_width, rows, columns, gaps):
     rotate()
     
     
-    move_in_steps(max_col_distance)
+    move_in_steps(max_col_distance+5)
     rotate()
     move_in_steps(max_row_distance)
     rotate()
-    move_in_steps(max_col_distance)
+    move_in_steps(max_col_distance+5)
     rotate()
     move_in_steps(tile_width)
     send_serial_command(f"ROTATE_RIGHT {97}")  # 90 deg
