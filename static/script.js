@@ -78,34 +78,3 @@ document.getElementById("automatic").addEventListener("click", function () {
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
-function checkDistance() {
-  fetch('/check-distance')
-      .then(response => response.json())
-      .then(data => {
-          document.getElementById('distance-message').innerText = data.message;
-          console.log('Distance Sensor 1:', data.distance1);
-      })
-      .catch(error => console.error('Error:', error));
-}
-
-// Call the checkDistance function every 2 seconds
-setInterval(checkDistance, 2000);
-
-
-// function checkIR() {
-//   fetch('/check-ir')
-//       .then(response => response.json())
-//       .then(data => {
-//           document.getElementById('ir-message').innerText = data.message;
-//           console.log('IR Sensor:', data.ir);
-//       })
-//       .catch(error => console.error('Error:', error));
-// }
-
-// function checkSensors(){
-//   checkIR()
-//   // checkDistance()
-// }
-
-// setInterval(checkSensors, 100);
